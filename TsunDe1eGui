@@ -1,9 +1,10 @@
 -- ==========================================
--- TsunDe1e Gui
+-- TsunDe1e Gui - Hmph! Edition
 -- ==========================================
 
 local Players = game:GetService("Players")
 local StarterGui = game:GetService("StarterGui")
+local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
 
 local ASSET_IMAGE = "rbxassetid://105816152070321"
@@ -15,16 +16,18 @@ ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
 
 -------------------------------------------------
--- 1. Mini Floating Icon (บังคับใช้ Asset ID 105816152070321)
+-- 1. Mini Floating Icon (Square with Cyan border and "Hmph!")
 -------------------------------------------------
-local MiniIcon = Instance.new("ImageButton")
+local MiniIcon = Instance.new("TextButton")
 MiniIcon.Name = "TsunDe1eMiniIcon"
-MiniIcon.Size = UDim2.new(0, 50, 0, 50)
+MiniIcon.Size = UDim2.new(0, 60, 0, 60)
 MiniIcon.Position = UDim2.new(0.1, 0, 0.2, 0)
-MiniIcon.Image = ASSET_IMAGE
-MiniIcon.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+MiniIcon.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
 MiniIcon.BorderSizePixel = 0
-MiniIcon.ScaleType = Enum.ScaleType.Crop
+MiniIcon.Text = "Hmph!"
+MiniIcon.TextColor3 = Color3.fromRGB(0, 255, 255)
+MiniIcon.TextSize = 14
+MiniIcon.Font = Enum.Font.GothamBold
 MiniIcon.Active = true
 MiniIcon.Draggable = true
 MiniIcon.Parent = ScreenGui
@@ -42,7 +45,7 @@ local holding = false
 local function showBadgeNotification(statusText)
     pcall(function()
         StarterGui:SetCore("SendNotification", {
-            Title = "www y.o.u.",
+            Title = "I'm GAY",
             Text = statusText,
             Icon = ASSET_IMAGE,
             Duration = 3
@@ -73,16 +76,14 @@ MiniIcon.MouseButton1Up:Connect(function()
 end)
 
 -------------------------------------------------
--- 2. Main GUI Frame (ทรงสี่เหลี่ยม ขอบ Cyan ชัดๆ)
+-- 2. Main GUI Frame (White background, Cyan border, No close button)
 -------------------------------------------------
-local MainFrame = Instance.new("ImageLabel")
+local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.new(0, 300, 0, 260)
-MainFrame.Position = UDim2.new(0.5, -150, 0.5, -130)
-MainFrame.Image = ASSET_IMAGE
-MainFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+MainFrame.Size = UDim2.new(0, 320, 0, 380)
+MainFrame.Position = UDim2.new(0.5, -160, 0.5, -190)
+MainFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 MainFrame.BorderSizePixel = 0
-MainFrame.ScaleType = Enum.ScaleType.Crop
 MainFrame.Visible = false
 MainFrame.Active = true
 MainFrame.Draggable = true
@@ -90,24 +91,24 @@ MainFrame.Parent = ScreenGui
 
 local FrameStroke = Instance.new("UIStroke")
 FrameStroke.Color = Color3.fromRGB(0, 255, 255)
-FrameStroke.Thickness = 2
+FrameStroke.Thickness = 3
 FrameStroke.Parent = MainFrame
 
-local DarkOverlay = Instance.new("Frame")
-DarkOverlay.Size = UDim2.new(1, 0, 1, 0)
-DarkOverlay.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-DarkOverlay.BackgroundTransparency = 0.3
-DarkOverlay.BorderSizePixel = 0
-DarkOverlay.Parent = MainFrame
+-- Top Bar
+local TopBar = Instance.new("Frame")
+TopBar.Size = UDim2.new(1, 0, 0, 40)
+TopBar.BackgroundColor3 = Color3.fromRGB(0, 200, 200)
+TopBar.BorderSizePixel = 0
+TopBar.Parent = MainFrame
 
 local Title = Instance.new("TextLabel")
-Title.Size = UDim2.new(1, 0, 0, 45)
+Title.Size = UDim2.new(1, 0, 1, 0)
 Title.BackgroundTransparency = 1
 Title.Text = "TsunDe1e Gui"
-Title.TextColor3 = Color3.fromRGB(0, 255, 255)
-Title.TextSize = 22
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextSize = 18
 Title.Font = Enum.Font.GothamBold
-Title.Parent = MainFrame
+Title.Parent = TopBar
 
 MiniIcon.MouseButton1Click:Connect(function()
     if tick() - holdTime < holdThreshold then
@@ -116,104 +117,205 @@ MiniIcon.MouseButton1Click:Connect(function()
 end)
 
 -------------------------------------------------
--- 3. Sound System
+-- 3. Noclip & Bang / Sit Bang Functions
 -------------------------------------------------
-local SoundLabel = Instance.new("TextLabel")
-SoundLabel.Size = UDim2.new(0.9, 0, 0, 25)
-SoundLabel.Position = UDim2.new(0.05, 0, 0.22, 0)
-SoundLabel.BackgroundTransparency = 1
-SoundLabel.Text = "Volume Level (1 - 10000):"
-SoundLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-SoundLabel.TextSize = 13
-SoundLabel.Font = Enum.Font.GothamBold
-SoundLabel.TextXAlignment = Enum.TextXAlignment.Left
-SoundLabel.Parent = MainFrame
+local noclipEnabled = false
+local noclipConnection
 
-local VolumeBox = Instance.new("TextBox")
-VolumeBox.Size = UDim2.new(0.9, 0, 0, 38)
-VolumeBox.Position = UDim2.new(0.05, 0, 0.32, 0)
-VolumeBox.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-VolumeBox.BorderSizePixel = 0
-VolumeBox.Text = "100"
-VolumeBox.TextColor3 = Color3.fromRGB(0, 255, 255)
-VolumeBox.TextSize = 15
-VolumeBox.Font = Enum.Font.GothamBold
-VolumeBox.PlaceholderText = "1 - 10000"
-VolumeBox.Parent = MainFrame
+local NoclipBtn = Instance.new("TextButton")
+NoclipBtn.Size = UDim2.new(0.9, 0, 0, 35)
+NoclipBtn.Position = UDim2.new(0.05, 0, 0, 50)
+NoclipBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+NoclipBtn.Text = "Toggle Noclip: OFF"
+NoclipBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+NoclipBtn.TextSize = 13
+NoclipBtn.Font = Enum.Font.GothamBold
+NoclipBtn.Parent = MainFrame
 
-local BoxStroke = Instance.new("UIStroke")
-BoxStroke.Color = Color3.fromRGB(0, 255, 255)
-BoxStroke.Thickness = 1
-BoxStroke.Parent = VolumeBox
+local NoclipStroke = Instance.new("UIStroke")
+NoclipStroke.Color = Color3.fromRGB(0, 255, 255)
+NoclipStroke.Thickness = 1
+NoclipStroke.Parent = NoclipBtn
 
-VolumeBox:GetPropertyChangedSignal("Text"):Connect(function()
-    local num = tonumber(VolumeBox.Text)
-    if VolumeBox.Text ~= "" then
-        if not num then
-            VolumeBox.Text = VolumeBox.Text:gsub("%D", "")
-        elseif num > 10000 then
-            VolumeBox.Text = "10000"
-        elseif num < 1 and VolumeBox.Text ~= "0" then
-            VolumeBox.Text = "1"
-        end
-    end
-end)
-
-local TrollSound = Instance.new("Sound")
-TrollSound.Name = "TsunDe1eTrollSound"
-TrollSound.SoundId = "rbxassetid://" .. SOUND_ID
-TrollSound.Volume = 1
-TrollSound.Looped = true
-
-local PlayBtn = Instance.new("TextButton")
-PlayBtn.Size = UDim2.new(0.9, 0, 0, 45)
-PlayBtn.Position = UDim2.new(0.05, 0, 0.52, 0)
-PlayBtn.BackgroundColor3 = Color3.fromRGB(0, 180, 180)
-PlayBtn.BorderSizePixel = 0
-PlayBtn.Text = "Play Troll Sound"
-PlayBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-PlayBtn.TextSize = 15
-PlayBtn.Font = Enum.Font.GothamBold
-PlayBtn.Parent = MainFrame
-
-local BtnStroke = Instance.new("UIStroke")
-BtnStroke.Color = Color3.fromRGB(0, 255, 255)
-BtnStroke.Thickness = 1
-BtnStroke.Parent = PlayBtn
-
-local isPlaying = false
-
-PlayBtn.MouseButton1Click:Connect(function()
-    isPlaying = not isPlaying
-    
-    if isPlaying then
-        PlayBtn.Text = "Stop Troll Sound"
-        PlayBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-        
-        local char = LocalPlayer.Character
-        if char and char:FindFirstChild("HumanoidRootPart") then
-            TrollSound.Parent = char.HumanoidRootPart
-            TrollSound.Volume = tonumber(VolumeBox.Text) or 100
-            TrollSound:Play()
-        end
+NoclipBtn.MouseButton1Click:Connect(function()
+    noclipEnabled = not noclipEnabled
+    if noclipEnabled then
+        NoclipBtn.Text = "Toggle Noclip: ON"
+        NoclipBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 255)
+        NoclipBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        noclipConnection = RunService.Stepped:Connect(function()
+            local char = LocalPlayer.Character
+            if char then
+                for _, part in pairs(char:GetDescendants()) do
+                    if part:IsA("BasePart") then part.CanCollide = false end
+                end
+            end
+        end)
     else
-        PlayBtn.Text = "Play Troll Sound"
-        PlayBtn.BackgroundColor3 = Color3.fromRGB(0, 180, 180)
-        TrollSound:Stop()
+        NoclipBtn.Text = "Toggle Noclip: OFF"
+        NoclipBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+        NoclipBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+        if noclipConnection then noclipConnection:Disconnect() end
     end
 end)
 
--------------------------------------------------
--- Footer
--------------------------------------------------
+-- Player List Selection
+local ListLabel = Instance.new("TextLabel")
+ListLabel.Size = UDim2.new(0.9, 0, 0, 20)
+ListLabel.Position = UDim2.new(0.05, 0, 0, 90)
+ListLabel.BackgroundTransparency = 1
+ListLabel.Text = "Select Target Player:"
+ListLabel.TextColor3 = Color3.fromRGB(50, 50, 50)
+ListLabel.TextSize = 12
+ListLabel.Font = Enum.Font.GothamBold
+ListLabel.TextXAlignment = Enum.TextXAlignment.Left
+ListLabel.Parent = MainFrame
+
+local ScrollingFrame = Instance.new("ScrollingFrame")
+ScrollingFrame.Size = UDim2.new(0.9, 0, 0, 110)
+ScrollingFrame.Position = UDim2.new(0.05, 0, 0, 115)
+ScrollingFrame.BackgroundColor3 = Color3.fromRGB(245, 245, 245)
+ScrollingFrame.BorderSizePixel = 0
+ScrollingFrame.Parent = MainFrame
+
+local ScrollStroke = Instance.new("UIStroke")
+ScrollStroke.Color = Color3.fromRGB(0, 255, 255)
+ScrollStroke.Thickness = 1
+ScrollStroke.Parent = ScrollingFrame
+
+local UIListLayout = Instance.new("UIListLayout")
+UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+UIListLayout.Parent = ScrollingFrame
+
+local selectedTarget = nil
+local function updatePlayerList()
+    for _, child in pairs(ScrollingFrame:GetChildren()) do
+        if child:IsA("TextButton") then child:Destroy() end
+    end
+    for _, plr in pairs(Players:GetPlayers()) do
+        if plr ~= LocalPlayer then
+            local pBtn = Instance.new("TextButton")
+            pBtn.Size = UDim2.new(1, 0, 0, 28)
+            pBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            pBtn.Text = "  " .. plr.Name
+            pBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+            pBtn.TextSize = 12
+            pBtn.Font = Enum.Font.Gotham
+            pBtn.TextXAlignment = Enum.TextXAlignment.Left
+            pBtn.Parent = ScrollingFrame
+            
+            pBtn.MouseButton1Click:Connect(function()
+                selectedTarget = plr
+                for _, b in pairs(ScrollingFrame:GetChildren()) do
+                    if b:IsA("TextButton") then b.BackgroundColor3 = Color3.fromRGB(255, 255, 255) end
+                end
+                pBtn.BackgroundColor3 = Color3.fromRGB(200, 255, 255)
+            end)
+        end
+    end
+    ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, UIListLayout.AbsoluteContentSize.Y)
+end
+
+Players.PlayerAdded:Connect(updatePlayerList)
+Players.PlayerRemoving:Connect(updatePlayerList)
+updatePlayerList()
+
+-- Bang and Sit/Floor Bang Buttons
+local BangBtn = Instance.new("TextButton")
+BangBtn.Size = UDim2.new(0.9, 0, 0, 35)
+BangBtn.Position = UDim2.new(0.05, 0, 0, 235)
+BangBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+BangBtn.Text = "Bang Target: OFF"
+BangBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+BangBtn.TextSize = 13
+BangBtn.Font = Enum.Font.GothamBold
+BangBtn.Parent = MainFrame
+
+local BangStroke = Instance.new("UIStroke")
+BangStroke.Color = Color3.fromRGB(0, 255, 255)
+BangStroke.Thickness = 1
+BangStroke.Parent = BangBtn
+
+local SitBangBtn = Instance.new("TextButton")
+SitBangBtn.Size = UDim2.new(0.9, 0, 0, 35)
+SitBangBtn.Position = UDim2.new(0.05, 0, 0, 278)
+SitBangBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+SitBangBtn.Text = "Sit/Floor Bang Target: OFF"
+SitBangBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+SitBangBtn.TextSize = 13
+SitBangBtn.Font = Enum.Font.GothamBold
+SitBangBtn.Parent = MainFrame
+
+local SitStroke = Instance.new("UIStroke")
+SitStroke.Color = Color3.fromRGB(0, 255, 255)
+SitStroke.Thickness = 1
+SitStroke.Parent = SitBangBtn
+
+local bangMode = false
+local sitBangMode = false
+
+RunService.Stepped:Connect(function()
+    if not LocalPlayer.Character or not LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then return end
+    local myRoot = LocalPlayer.Character.HumanoidRootPart
+    local humanoid = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+    
+    if bangMode and selectedTarget and selectedTarget.Character and selectedTarget.Character:FindFirstChild("HumanoidRootPart") then
+        local targetRoot = selectedTarget.Character.HumanoidRootPart
+        myRoot.CFrame = targetRoot.CFrame * CFrame.new(0, 0, 1.2 + math.sin(tick() * 25) * 0.8)
+    elseif sitBangMode and selectedTarget and selectedTarget.Character and selectedTarget.Character:FindFirstChild("HumanoidRootPart") then
+        local targetRoot = selectedTarget.Character.HumanoidRootPart
+        if humanoid then humanoid.Sit = true end
+        myRoot.CFrame = targetRoot.CFrame * CFrame.new(0, -0.5, -1 + math.sin(tick() * 25) * 0.8) * CFrame.Angles(math.rad(90), 0, 0)
+    end
+end)
+
+BangBtn.MouseButton1Click:Connect(function()
+    if not selectedTarget then return end
+    bangMode = not bangMode
+    sitBangMode = false
+    SitBangBtn.Text = "Sit/Floor Bang Target: OFF"
+    SitBangBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+    SitBangBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+    
+    if bangMode then
+        BangBtn.Text = "Bang Target: ON"
+        BangBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 255)
+        BangBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    else
+        BangBtn.Text = "Bang Target: OFF"
+        BangBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+        BangBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+    end
+end)
+
+SitBangBtn.MouseButton1Click:Connect(function()
+    if not selectedTarget then return end
+    sitBangMode = not sitBangMode
+    bangMode = false
+    BangBtn.Text = "Bang Target: OFF"
+    BangBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+    BangBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+    
+    if sitBangMode then
+        SitBangBtn.Text = "Sit/Floor Bang Target: ON"
+        SitBangBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 255)
+        SitBangBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    else
+        SitBangBtn.Text = "Sit/Floor Bang Target: OFF"
+        SitBangBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+        SitBangBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+    end
+end)
+
+-- Footer (Red text with default source sans font)
 local Footer = Instance.new("TextLabel")
 Footer.Size = UDim2.new(1, 0, 0, 25)
-Footer.Position = UDim2.new(0, 0, 0.85, 0)
+Footer.Position = UDim2.new(0, 0, 1, -28)
 Footer.BackgroundTransparency = 1
-Footer.Text = "www y.o.u."
-Footer.TextColor3 = Color3.fromRGB(150, 150, 150)
-Footer.TextSize = 11
-Footer.Font = Enum.Font.GothamBold
+Footer.Text = "I'm GAY"
+Footer.TextColor3 = Color3.fromRGB(255, 0, 0)
+Footer.TextSize = 13
+Footer.Font = Enum.Font.SourceSans
 Footer.Parent = MainFrame
 
 print("TsunDe1e Gui Loaded Successfully")
