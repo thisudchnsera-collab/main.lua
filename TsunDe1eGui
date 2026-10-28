@@ -1,5 +1,5 @@
 -- ==========================================
--- TsunDe1e Gui - Clean Text Edition (No Strokes)
+-- TsunDe1e Gui - Jerk off Edition
 -- ==========================================
 
 local Players = game:GetService("Players")
@@ -15,7 +15,7 @@ ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
 
 -------------------------------------------------
--- 1. Mini Floating Icon (ไม่มีกรอบข้อความ)
+-- 1. Mini Floating Icon
 -------------------------------------------------
 local MiniIcon = Instance.new("TextButton")
 MiniIcon.Name = "TsunDe1eMiniIcon"
@@ -26,12 +26,11 @@ MiniIcon.BorderSizePixel = 0
 MiniIcon.Text = "Hmph!"
 MiniIcon.TextColor3 = Color3.fromRGB(0, 255, 255)
 MiniIcon.TextSize = 14
-MiniIcon.Font = Enum.Font.SourceSans -- ฟอนต์บางปกติ ไม่มีกรอบทับ
+MiniIcon.Font = Enum.Font.SourceSans
 MiniIcon.Active = true
 MiniIcon.Draggable = true
 MiniIcon.Parent = ScreenGui
 
--- กรอบไอคอนหลัก (คงไว้เฉพาะกรอบปุ่มสี่เหลี่ยมตามดีไซน์)
 local IconStroke = Instance.new("UIStroke")
 IconStroke.Color = Color3.fromRGB(0, 255, 255)
 IconStroke.Thickness = 1.5
@@ -76,7 +75,7 @@ MiniIcon.MouseButton1Up:Connect(function()
 end)
 
 -------------------------------------------------
--- 2. Main GUI Frame
+-- 2. Main GUI Frame (ขยายความสูงเพิ่มนิดนึงให้พอดีกับปุ่มใหม่)
 -------------------------------------------------
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
@@ -116,16 +115,14 @@ MiniIcon.MouseButton1Click:Connect(function()
 end)
 
 -------------------------------------------------
--- 3. Functions (ทุกข้อความไม่มี UIStroke ที่ตัวหนังสือ)
+-- 3. Functions (Noclip, Fling, Speed, Bang, Jerk off)
 -------------------------------------------------
 local noclipEnabled = false
 local noclipConnection
-local godModeEnabled = false
-local godModeConnection
 local flingEnabled = false
 local flingConnection
 
--- ปุ่ม Noclip
+-- Noclip Button
 local NoclipBtn = Instance.new("TextButton")
 NoclipBtn.Size = UDim2.new(0.9, 0, 0, 26)
 NoclipBtn.Position = UDim2.new(0.05, 0, 0, 42)
@@ -164,48 +161,10 @@ NoclipBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- ปุ่ม God Mode
-local GodBtn = Instance.new("TextButton")
-GodBtn.Size = UDim2.new(0.9, 0, 0, 26)
-GodBtn.Position = UDim2.new(0.05, 0, 0, 72)
-GodBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
-GodBtn.BorderSizePixel = 0
-GodBtn.Text = "Toggle God Mode: OFF"
-GodBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
-GodBtn.TextSize = 12
-GodBtn.Font = Enum.Font.SourceSansBold
-GodBtn.Parent = MainFrame
-
-local GodBtnStroke = Instance.new("UIStroke")
-GodBtnStroke.Color = Color3.fromRGB(0, 255, 255)
-GodBtnStroke.Thickness = 1
-GodBtnStroke.Parent = GodBtn
-
-GodBtn.MouseButton1Click:Connect(function()
-    godModeEnabled = not godModeEnabled
-    if godModeEnabled then
-        GodBtn.Text = "Toggle God Mode: ON"
-        GodBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 255)
-        GodBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-        godModeConnection = RunService.Stepped:Connect(function()
-            local char = LocalPlayer.Character
-            if char then
-                local humanoid = char:FindFirstChildOfClass("Humanoid")
-                if humanoid then humanoid.Health = humanoid.MaxHealth end
-            end
-        end)
-    else
-        GodBtn.Text = "Toggle God Mode: OFF"
-        GodBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
-        GodBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
-        if godModeConnection then godModeConnection:Disconnect() end
-    end
-end)
-
--- ปุ่ม Fling Mode
+-- Fling Button
 local FlingBtn = Instance.new("TextButton")
 FlingBtn.Size = UDim2.new(0.9, 0, 0, 26)
-FlingBtn.Position = UDim2.new(0.05, 0, 0, 102)
+FlingBtn.Position = UDim2.new(0.05, 0, 0, 75)
 FlingBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
 FlingBtn.BorderSizePixel = 0
 FlingBtn.Text = "Toggle Fling Mode: OFF"
@@ -243,12 +202,12 @@ FlingBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- ช่องความเร็ว Bang
+-- Speed Box
 local SpeedLabel = Instance.new("TextLabel")
 SpeedLabel.Size = UDim2.new(0.5, 0, 0, 22)
-SpeedLabel.Position = UDim2.new(0.05, 0, 0, 132)
+SpeedLabel.Position = UDim2.new(0.05, 0, 0, 108)
 SpeedLabel.BackgroundTransparency = 1
-SpeedLabel.Text = "Bang Speed (1-150):"
+SpeedLabel.Text = "Speed (1-150):"
 SpeedLabel.TextColor3 = Color3.fromRGB(50, 50, 50)
 SpeedLabel.TextSize = 11
 SpeedLabel.Font = Enum.Font.SourceSansBold
@@ -257,7 +216,7 @@ SpeedLabel.Parent = MainFrame
 
 local SpeedBox = Instance.new("TextBox")
 SpeedBox.Size = UDim2.new(0.38, 0, 0, 22)
-SpeedBox.Position = UDim2.new(0.57, 0, 0, 132)
+SpeedBox.Position = UDim2.new(0.57, 0, 0, 108)
 SpeedBox.BackgroundColor3 = Color3.fromRGB(245, 245, 245)
 SpeedBox.BorderSizePixel = 0
 SpeedBox.Text = "25"
@@ -271,10 +230,10 @@ SpeedBoxStroke.Color = Color3.fromRGB(0, 255, 255)
 SpeedBoxStroke.Thickness = 1
 SpeedBoxStroke.Parent = SpeedBox
 
--- รายชื่อผู้เล่น
+-- Player List
 local ListLabel = Instance.new("TextLabel")
 ListLabel.Size = UDim2.new(0.9, 0, 0, 18)
-ListLabel.Position = UDim2.new(0.05, 0, 0, 158)
+ListLabel.Position = UDim2.new(0.05, 0, 0, 135)
 ListLabel.BackgroundTransparency = 1
 ListLabel.Text = "Select Target Player:"
 ListLabel.TextColor3 = Color3.fromRGB(50, 50, 50)
@@ -284,8 +243,8 @@ ListLabel.TextXAlignment = Enum.TextXAlignment.Left
 ListLabel.Parent = MainFrame
 
 local ScrollingFrame = Instance.new("ScrollingFrame")
-ScrollingFrame.Size = UDim2.new(0.9, 0, 0, 85)
-ScrollingFrame.Position = UDim2.new(0.05, 0, 0, 178)
+ScrollingFrame.Size = UDim2.new(0.9, 0, 0, 75)
+ScrollingFrame.Position = UDim2.new(0.05, 0, 0, 155)
 ScrollingFrame.BackgroundColor3 = Color3.fromRGB(245, 245, 245)
 ScrollingFrame.BorderSizePixel = 0
 ScrollingFrame.Parent = MainFrame
@@ -333,10 +292,10 @@ Players.PlayerAdded:Connect(updatePlayerList)
 Players.PlayerRemoving:Connect(updatePlayerList)
 updatePlayerList()
 
--- ปุ่ม Bang
+-- Action Buttons (Bang, Sit Bang, Jerk off)
 local BangBtn = Instance.new("TextButton")
 BangBtn.Size = UDim2.new(0.9, 0, 0, 26)
-BangBtn.Position = UDim2.new(0.05, 0, 0, 268)
+BangBtn.Position = UDim2.new(0.05, 0, 0, 235)
 BangBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
 BangBtn.BorderSizePixel = 0
 BangBtn.Text = "Bang Target: OFF"
@@ -350,10 +309,9 @@ BangBtnStroke.Color = Color3.fromRGB(0, 255, 255)
 BangBtnStroke.Thickness = 1
 BangBtnStroke.Parent = BangBtn
 
--- ปุ่ม Sit/Floor Bang
 local SitBangBtn = Instance.new("TextButton")
 SitBangBtn.Size = UDim2.new(0.9, 0, 0, 26)
-SitBangBtn.Position = UDim2.new(0.05, 0, 0, 298)
+SitBangBtn.Position = UDim2.new(0.05, 0, 0, 265)
 SitBangBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
 SitBangBtn.BorderSizePixel = 0
 SitBangBtn.Text = "Sit/Floor Bang Target: OFF"
@@ -367,8 +325,25 @@ SitBangStroke.Color = Color3.fromRGB(0, 255, 255)
 SitBangStroke.Thickness = 1
 SitBangStroke.Parent = SitBangBtn
 
+local JerkBtn = Instance.new("TextButton")
+JerkBtn.Size = UDim2.new(0.9, 0, 0, 26)
+JerkBtn.Position = UDim2.new(0.05, 0, 0, 295)
+JerkBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+JerkBtn.BorderSizePixel = 0
+JerkBtn.Text = "Jerk off: OFF"
+JerkBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+JerkBtn.TextSize = 12
+JerkBtn.Font = Enum.Font.SourceSansBold
+JerkBtn.Parent = MainFrame
+
+local JerkStroke = Instance.new("UIStroke")
+JerkStroke.Color = Color3.fromRGB(0, 255, 255)
+JerkStroke.Thickness = 1
+JerkStroke.Parent = JerkBtn
+
 local bangMode = false
 local sitBangMode = false
+local jerkMode = false
 
 RunService.Stepped:Connect(function()
     if not LocalPlayer.Character or not LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then return end
@@ -385,6 +360,9 @@ RunService.Stepped:Connect(function()
         local targetRoot = selectedTarget.Character.HumanoidRootPart
         if humanoid then humanoid.Sit = true end
         myRoot.CFrame = targetRoot.CFrame * CFrame.new(0, -0.5, -1 + math.sin(tick() * speed) * 0.8) * CFrame.Angles(math.rad(90), 0, 0)
+    elseif jerkMode then
+        if humanoid then humanoid.Sit = true end
+        myRoot.CFrame = myRoot.CFrame * CFrame.new(0, 0, math.sin(tick() * speed) * 0.1) * CFrame.Angles(math.rad(math.sin(tick() * speed) * 45), 0, 0)
     end
 end)
 
@@ -392,9 +370,13 @@ BangBtn.MouseButton1Click:Connect(function()
     if not selectedTarget then return end
     bangMode = not bangMode
     sitBangMode = false
+    jerkMode = false
     SitBangBtn.Text = "Sit/Floor Bang Target: OFF"
     SitBangBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
     SitBangBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+    JerkBtn.Text = "Jerk off: OFF"
+    JerkBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+    JerkBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
     
     if bangMode then
         BangBtn.Text = "Bang Target: ON"
@@ -411,9 +393,13 @@ SitBangBtn.MouseButton1Click:Connect(function()
     if not selectedTarget then return end
     sitBangMode = not sitBangMode
     bangMode = false
+    jerkMode = false
     BangBtn.Text = "Bang Target: OFF"
     BangBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
     BangBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+    JerkBtn.Text = "Jerk off: OFF"
+    JerkBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+    JerkBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
     
     if sitBangMode then
         SitBangBtn.Text = "Sit/Floor Bang Target: ON"
@@ -423,6 +409,28 @@ SitBangBtn.MouseButton1Click:Connect(function()
         SitBangBtn.Text = "Sit/Floor Bang Target: OFF"
         SitBangBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
         SitBangBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+    end
+end)
+
+JerkBtn.MouseButton1Click:Connect(function()
+    jerkMode = not jerkMode
+    bangMode = false
+    sitBangMode = false
+    BangBtn.Text = "Bang Target: OFF"
+    BangBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+    BangBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+    SitBangBtn.Text = "Sit/Floor Bang Target: OFF"
+    SitBangBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+    SitBangBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+    
+    if jerkMode then
+        JerkBtn.Text = "Jerk off: ON"
+        JerkBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 255)
+        JerkBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    else
+        JerkBtn.Text = "Jerk off: OFF"
+        JerkBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+        JerkBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
     end
 end)
 
