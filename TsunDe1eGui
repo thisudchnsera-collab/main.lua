@@ -1,5 +1,5 @@
 -- ==========================================
--- TsunDe1e Gui - 3 Tools Animation Edition
+-- TsunDe1e Gui - Perfect Jerk Edition (Fixed Arm)
 -- ==========================================
 
 local Players = game:GetService("Players")
@@ -75,53 +75,7 @@ MiniIcon.MouseButton1Up:Connect(function()
 end)
 
 -------------------------------------------------
--- 2. Tool Dropdown Menu (เมนูเสก Tool ทั้ง 3 อัน)
--------------------------------------------------
-local ToolMenu = Instance.new("Frame")
-ToolMenu.Name = "ToolMenu"
-ToolMenu.Size = UDim2.new(0, 140, 0, 110)
-ToolMenu.Position = UDim2.new(0, 70, 0, 0)
-ToolMenu.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-ToolMenu.BorderSizePixel = 0
-ToolMenu.Visible = false
-ToolMenu.Parent = MiniIcon
-
-local MenuStroke = Instance.new("UIStroke")
-MenuStroke.Color = Color3.fromRGB(0, 255, 255)
-MenuStroke.Thickness = 1.5
-MenuStroke.Parent = ToolMenu
-
-local MenuLayout = Instance.new("UIListLayout")
-MenuLayout.SortOrder = Enum.SortOrder.LayoutOrder
-MenuLayout.Padding = UDim.new(0, 5)
-MenuLayout.Parent = ToolMenu
-
-local function createToolBtn(name, order)
-    local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(1, 0, 0, 30)
-    btn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-    btn.BorderSizePixel = 0
-    btn.Text = name
-    btn.TextColor3 = Color3.fromRGB(0, 255, 255)
-    btn.TextSize = 12
-    btn.Font = Enum.Font.SourceSansBold
-    btn.LayoutOrder = order
-    btn.Parent = ToolMenu
-    return btn
-end
-
-local Tool1Btn = createToolBtn("Tool 1: กอดอก", 1)
-local Tool2Btn = createToolBtn("Tool 2: พยักหน้า", 2)
-local Tool3Btn = createToolBtn("Tool 3: ส่ายหน้า", 3)
-
-MiniIcon.MouseButton1Click:Connect(function()
-    if tick() - holdTime < holdThreshold then
-        ToolMenu.Visible = not ToolMenu.Visible
-    end
-end)
-
--------------------------------------------------
--- 3. Main GUI Frame (Trolling Panel)
+-- 2. Main GUI Frame
 -------------------------------------------------
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
@@ -154,32 +108,14 @@ Title.TextSize = 15
 Title.Font = Enum.Font.SourceSansBold
 Title.Parent = TopBar
 
--- ปุ่มเปิด/ปิด หน้าต่างหลักจาก Title bar
-local ToggleMainBtn = Instance.new("TextButton")
-ToggleMainBtn.Size = UDim2.new(0, 35, 1, 0)
-ToggleMainBtn.Position = UDim2.new(1, -35, 0, 0)
-ToggleMainBtn.BackgroundTransparency = 1
-ToggleMainBtn.Text = "-"
-ToggleMainBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-ToggleMainBtn.TextSize = 18
-ToggleMainBtn.Font = Enum.Font.SourceSansBold
-ToggleMainBtn.Parent = TopBar
-
-ToggleMainBtn.MouseButton1Click:Connect(function()
-    for _, child in pairs(MainFrame:GetChildren()) do
-        if child ~= TopBar and child:IsA("GuiObject") then
-            child.Visible = not child.Visible
-        end
-    end
-    if MainFrame.Size == UDim2.new(0, 300, 0, 35) then
-        MainFrame.Size = UDim2.new(0, 300, 0, 410)
-    else
-        MainFrame.Size = UDim2.new(0, 300, 0, 35)
+MiniIcon.MouseButton1Click:Connect(function()
+    if tick() - holdTime < holdThreshold then
+        MainFrame.Visible = not MainFrame.Visible
     end
 end)
 
 -------------------------------------------------
--- 4. Trolling Functions & Animation Tools
+-- 3. Functions
 -------------------------------------------------
 local noclipEnabled = false
 local noclipConnection
@@ -313,7 +249,7 @@ Players.PlayerAdded:Connect(updatePlayerList)
 Players.PlayerRemoving:Connect(updatePlayerList)
 updatePlayerList()
 
--- Action Buttons (Bang, Sit Bang, Jerk off)
+-- Action Buttons
 local BangBtn = Instance.new("TextButton")
 BangBtn.Size = UDim2.new(0.9, 0, 0, 26)
 BangBtn.Position = UDim2.new(0.05, 0, 0, 205)
@@ -365,27 +301,21 @@ JerkStroke.Parent = JerkBtn
 local bangMode = false
 local sitBangMode = false
 local jerkMode = false
-local activeTool = nil -- เก็บสถานะ Tool แอนิเมชั่นปัจจุบัน
 
-local originalLeftShoulderC0 = nil
-local originalRightShoulderC0 = nil
-local originalNeckC0 = nil
+-- ตัวแปรเก็บค่าเริ่มต้นของข้อต่อแขนขวาแบบแม่นยำ
+local storedShoulderC0 = nil
 
-local function resetJoints()
+local function resetArm()
     local char = LocalPlayer.Character
     if char then
         pcall(function()
-            local lShoulder = char:FindFirstChild("Left Shoulder", true) or char:FindFirstChild("LeftShoulder", true)
-            local rShoulder = char:FindFirstChild("Right Shoulder", true) or char:FindFirstChild("RightShoulder", true)
-            local neck = char:FindFirstChild("Neck", true)
-            if lShoulder and originalLeftShoulderC0 then lShoulder.C0 = originalLeftShoulderC0 end
-            if rShoulder and originalRightShoulderC0 then rShoulder.C0 = originalRightShoulderC0 end
-            if neck and originalNeckC0 then neck.C0 = originalNeckC0 end
+            local shoulder = char:FindFirstChild("Right Shoulder", true) or char:FindFirstChild("RightShoulder", true)
+            if shoulder and storedShoulderC0 then
+                shoulder.C0 = storedShoulderC0
+            end
         end)
     end
-    originalLeftShoulderC0 = nil
-    originalRightShoulderC0 = nil
-    originalNeckC0 = nil
+    storedShoulderC0 = nil
 end
 
 RunService.Stepped:Connect(function()
@@ -409,94 +339,22 @@ RunService.Stepped:Connect(function()
         pcall(function()
             local shoulder = char:FindFirstChild("Right Shoulder", true) or char:FindFirstChild("RightShoulder", true)
             if shoulder then
-                if not originalRightShoulderC0 then originalRightShoulderC0 = shoulder.C0 end
-                shoulder.C0 = CFrame.new(1, 0.5, 0) * CFrame.Angles(math.rad(90), math.rad(0), math.rad(math.sin(tick() * speed) * 60))
-            end
-        end)
-    elseif activeTool == "CrossArms" then
-        -- Tool 1: ยืนกอดอก
-        pcall(function()
-            local lShoulder = char:FindFirstChild("Left Shoulder", true) or char:FindFirstChild("LeftShoulder", true)
-            local rShoulder = char:FindFirstChild("Right Shoulder", true) or char:FindFirstChild("RightShoulder", true)
-            if lShoulder and not originalLeftShoulderC0 then originalLeftShoulderC0 = lShoulder.C0 end
-            if rShoulder and not originalRightShoulderC0 then originalRightShoulderC0 = rShoulder.C0 end
-            if lShoulder and rShoulder then
-                lShoulder.C0 = CFrame.new(-1, 0.5, 0) * CFrame.Angles(math.rad(45), math.rad(45), math.rad(0))
-                rShoulder.C0 = CFrame.new(1, 0.5, 0) * CFrame.Angles(math.rad(45), math.rad(-45), math.rad(0))
-            end
-        end)
-    elseif activeTool == "Nod" then
-        -- Tool 2: พยักหน้า
-        pcall(function()
-            local neck = char:FindFirstChild("Neck", true)
-            if neck and not originalNeckC0 then originalNeckC0 = neck.C0 end
-            if neck then
-                neck.C0 = CFrame.new(0, 1, 0) * CFrame.Angles(math.rad(90 + math.sin(tick() * 8) * 20), 0, 0)
-            end
-        end)
-    elseif activeTool == "ShakeHead" then
-        -- Tool 3: ส่ายหน้า
-        pcall(function()
-            local neck = char:FindFirstChild("Neck", true)
-            if neck and not originalNeckC0 then originalNeckC0 = neck.C0 end
-            if neck then
-                neck.C0 = CFrame.new(0, 1, 0) * CFrame.Angles(math.rad(90), math.rad(math.sin(tick() * 8) * 30), 0)
+                if not storedShoulderC0 then
+                    storedShoulderC0 = shoulder.C0
+                end
+                -- เซ็ตแขนขวาพุ่งตรงไปข้างหน้าแล้วขยับขึ้นลงตามสปีดอย่างแม่นยำ
+                shoulder.C0 = CFrame.new(1, 0.5, 0) * CFrame.Angles(math.rad(90), math.rad(0), math.rad(0)) * CFrame.Angles(math.rad(math.sin(tick() * speed) * 60), 0, 0)
             end
         end)
     end
-end)
-
--- จัดการคลิกปุ่ม Tool ในเมนูไอคอน
-Tool1Btn.MouseButton1Click:Connect(function()
-    if activeTool == "CrossArms" then
-        activeTool = nil
-        resetJoints()
-        Tool1Btn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-    else
-        activeTool = "CrossArms"
-        bangMode, sitBangMode, jerkMode = false, false, false
-        Tool1Btn.BackgroundColor3 = Color3.fromRGB(0, 200, 200)
-        Tool2Btn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-        Tool3Btn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-    end
-    ToolMenu.Visible = false
-end)
-
-Tool2Btn.MouseButton1Click:Connect(function()
-    if activeTool == "Nod" then
-        activeTool = nil
-        resetJoints()
-        Tool2Btn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-    else
-        activeTool = "Nod"
-        bangMode, sitBangMode, jerkMode = false, false, false
-        Tool2Btn.BackgroundColor3 = Color3.fromRGB(0, 200, 200)
-        Tool1Btn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-        Tool3Btn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-    end
-    ToolMenu.Visible = false
-end)
-
-Tool3Btn.MouseButton1Click:Connect(function()
-    if activeTool == "ShakeHead" then
-        activeTool = nil
-        resetJoints()
-        Tool3Btn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-    else
-        activeTool = "ShakeHead"
-        bangMode, sitBangMode, jerkMode = false, false, false
-        Tool3Btn.BackgroundColor3 = Color3.fromRGB(0, 200, 200)
-        Tool1Btn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-        Tool2Btn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-    end
-    ToolMenu.Visible = false
 end)
 
 BangBtn.MouseButton1Click:Connect(function()
     if not selectedTarget then return end
     bangMode = not bangMode
-    sitBangMode, jerkMode, activeTool = false, false, nil
-    resetJoints()
+    sitBangMode = false
+    jerkMode = false
+    resetArm()
     SitBangBtn.Text = "Sit/Floor Bang Target: OFF"
     SitBangBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
     SitBangBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
@@ -518,8 +376,9 @@ end)
 SitBangBtn.MouseButton1Click:Connect(function()
     if not selectedTarget then return end
     sitBangMode = not sitBangMode
-    bangMode, jerkMode, activeTool = false, false, nil
-    resetJoints()
+    bangMode = false
+    jerkMode = false
+    resetArm()
     BangBtn.Text = "Bang Target: OFF"
     BangBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
     BangBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
@@ -538,3 +397,38 @@ SitBangBtn.MouseButton1Click:Connect(function()
     end
 end)
 
+JerkBtn.MouseButton1Click:Connect(function()
+    jerkMode = not jerkMode
+    bangMode = false
+    sitBangMode = false
+    BangBtn.Text = "Bang Target: OFF"
+    BangBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+    BangBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+    SitBangBtn.Text = "Sit/Floor Bang Target: OFF"
+    SitBangBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+    SitBangBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+    
+    if jerkMode then
+        JerkBtn.Text = "Jerk off: ON"
+        JerkBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 255)
+        JerkBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    else
+        JerkBtn.Text = "Jerk off: OFF"
+        JerkBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+        JerkBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+        resetArm()
+    end
+end)
+
+-- Footer
+local Footer = Instance.new("TextLabel")
+Footer.Size = UDim2.new(1, 0, 0, 22)
+Footer.Position = UDim2.new(0, 0, 1, -25)
+Footer.BackgroundTransparency = 1
+Footer.Text = "I'm GAY"
+Footer.TextColor3 = Color3.fromRGB(255, 0, 0)
+Footer.TextSize = 12
+Footer.Font = Enum.Font.SourceSans
+Footer.Parent = MainFrame
+
+print("TsunDe1e Gui Loaded Successfully")
