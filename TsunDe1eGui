@@ -1,5 +1,5 @@
 -- ==========================================
--- TsunDe1e Gui - Structured 4-Legs Back Bang Edition
+-- TsunDe1e Gui - Normal Font & Smooth Pose Edition
 -- ==========================================
 
 local Players = game:GetService("Players")
@@ -79,8 +79,8 @@ end)
 -------------------------------------------------
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.new(0, 320, 0, 460)
-MainFrame.Position = UDim2.new(0.5, -160, 0.5, -230)
+MainFrame.Size = UDim2.new(0, 320, 0, 480)
+MainFrame.Position = UDim2.new(0.5, -160, 0.5, -240)
 MainFrame.BackgroundColor3 = Color3.fromRGB(245, 245, 245)
 MainFrame.BorderSizePixel = 0
 MainFrame.Visible = false
@@ -93,7 +93,7 @@ FrameStroke.Color = Color3.fromRGB(0, 255, 255)
 FrameStroke.Thickness = 2
 FrameStroke.Parent = MainFrame
 
--- ช่องชื่อ GUI ด้านบน
+-- ช่องชื่อ GUI ด้านบน (ใช้ฟอนต์ปกติ SourceSansBold)
 local TitleContainer = Instance.new("Frame")
 TitleContainer.Size = UDim2.new(1, 0, 0, 40)
 TitleContainer.BackgroundColor3 = Color3.fromRGB(0, 200, 200)
@@ -117,16 +117,16 @@ end)
 
 -- ช่องรวมฟังก์ชันต่างๆ (Function Panel)
 local FunctionPanel = Instance.new("ScrollingFrame")
-FunctionPanel.Size = UDim2.new(0.92, 0, 0, 360)
+FunctionPanel.Size = UDim2.new(0.92, 0, 0, 390)
 FunctionPanel.Position = UDim2.new(0.04, 0, 0, 50)
 FunctionPanel.BackgroundTransparency = 1
 FunctionPanel.BorderSizePixel = 0
-FunctionPanel.CanvasSize = UDim2.new(0, 0, 0, 410)
+FunctionPanel.CanvasSize = UDim2.new(0, 0, 0, 440)
 FunctionPanel.ScrollBarThickness = 4
 FunctionPanel.Parent = MainFrame
 
 -------------------------------------------------
--- 3. Functions & UI Elements inside Panel
+-- 3. Functions & UI Elements inside Panel (Font Normal)
 -------------------------------------------------
 local noclipEnabled = false
 local noclipConnection
@@ -265,7 +265,7 @@ Players.PlayerAdded:Connect(updatePlayerList)
 Players.PlayerRemoving:Connect(updatePlayerList)
 updatePlayerList()
 
--- Action Buttons (Bang & Sit/Floor Bang)
+-- Action Buttons (Bang, Sit/Floor Bang, Suck dick p/r)
 local BangBtn = Instance.new("TextButton")
 BangBtn.Size = UDim2.new(1, 0, 0, 30)
 BangBtn.Position = UDim2.new(0, 0, 0, 200)
@@ -298,8 +298,25 @@ SitBangStroke.Color = Color3.fromRGB(0, 255, 255)
 SitBangStroke.Thickness = 1
 SitBangStroke.Parent = SitBangBtn
 
+local SuckBtn = Instance.new("TextButton")
+SuckBtn.Size = UDim2.new(1, 0, 0, 30)
+SuckBtn.Position = UDim2.new(0, 0, 0, 280)
+SuckBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+SuckBtn.BorderSizePixel = 0
+SuckBtn.Text = "Suck dick p/r: OFF"
+SuckBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+SuckBtn.TextSize = 12
+SuckBtn.Font = Enum.Font.SourceSansBold
+SuckBtn.Parent = FunctionPanel
+
+local SuckStroke = Instance.new("UIStroke")
+SuckStroke.Color = Color3.fromRGB(0, 255, 255)
+SuckStroke.Thickness = 1
+SuckStroke.Parent = SuckBtn
+
 local bangMode = false
 local sitBangMode = false
+local suckMode = false
 
 RunService.Stepped:Connect(function()
     local char = LocalPlayer.Character
@@ -317,8 +334,13 @@ RunService.Stepped:Connect(function()
     elseif sitBangMode and selectedTarget and selectedTarget.Character and selectedTarget.Character:FindFirstChild("HumanoidRootPart") then
         local targetRoot = selectedTarget.Character.HumanoidRootPart
         if humanoid then humanoid.Sit = true end
-        -- ท่าสี่ขา คว่ำพื้น หันหลังให้เป้าหมาย (p/s) ขยับเข้าออกในระยะ 15 เซนติเมตร (0.15 Studs + ซอยตามสปีด)
-        myRoot.CFrame = targetRoot.CFrame * CFrame.new(0, -1, -0.8 + math.sin(tick() * speed) * 0.15) * CFrame.Angles(math.rad(0), math.rad(0), 0)
+        -- ท่าตามรูป: นั่งมือยันพื้น เท้ายันพื้น หันหน้าไปด้านหน้า (0 องศา) สะโพกชนเป้าหมาย ขยับเข้าออกนุ่มๆ ไม่สั่นรัว
+        myRoot.CFrame = targetRoot.CFrame * CFrame.new(0, -1, -1.1 + math.sin(tick() * (speed * 0.4)) * 0.3) * CFrame.Angles(0, 0, 0)
+    elseif suckMode and selectedTarget and selectedTarget.Character and selectedTarget.Character:FindFirstChild("HumanoidRootPart") then
+        local targetRoot = selectedTarget.Character.HumanoidRootPart
+        if humanoid then humanoid.Sit = true end
+        -- ท่า Suck dick p/r: นิ่งๆ นุ่มๆ ไม่สั่นกระตุก
+        myRoot.CFrame = targetRoot.CFrame * CFrame.new(0, -1.5, -0.6 + math.sin(tick() * (speed * 0.4)) * 0.1) * CFrame.Angles(0, math.rad(180), 0)
     end
 end)
 
@@ -326,8 +348,11 @@ BangBtn.MouseButton1Click:Connect(function()
     if not selectedTarget then return end
     bangMode = not bangMode
     sitBangMode = false
+    suckMode = false
     SitBangBtn.Text = "Sit/Floor Bang Target: OFF"
     SitBangBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    SuckBtn.Text = "Suck dick p/r: OFF"
+    SuckBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     
     if bangMode then
         BangBtn.Text = "Bang Target: ON"
@@ -342,8 +367,11 @@ SitBangBtn.MouseButton1Click:Connect(function()
     if not selectedTarget then return end
     sitBangMode = not sitBangMode
     bangMode = false
+    suckMode = false
     BangBtn.Text = "Bang Target: OFF"
     BangBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    SuckBtn.Text = "Suck dick p/r: OFF"
+    SuckBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     
     if sitBangMode then
         SitBangBtn.Text = "Sit/Floor Bang Target: ON"
@@ -354,10 +382,29 @@ SitBangBtn.MouseButton1Click:Connect(function()
     end
 end)
 
+SuckBtn.MouseButton1Click:Connect(function()
+    if not selectedTarget then return end
+    suckMode = not suckMode
+    bangMode = false
+    sitBangMode = false
+    BangBtn.Text = "Bang Target: OFF"
+    BangBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    SitBangBtn.Text = "Sit/Floor Bang Target: OFF"
+    SitBangBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    
+    if suckMode then
+        SuckBtn.Text = "Suck dick p/r: ON"
+        SuckBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 255)
+    else
+        SuckBtn.Text = "Suck dick p/r: OFF"
+        SuckBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    end
+end)
+
 -- Footer Signature inside panel
 local Footer = Instance.new("TextLabel")
 Footer.Size = UDim2.new(1, 0, 0, 20)
-Footer.Position = UDim2.new(0, 0, 0, 285)
+Footer.Position = UDim2.new(0, 0, 0, 325)
 Footer.BackgroundTransparency = 1
 Footer.Text = "I'm GAY"
 Footer.TextColor3 = Color3.fromRGB(255, 0, 0)
