@@ -1,5 +1,5 @@
 -- ==========================================
--- TsunDe1e Gui - Compact Edition
+-- TsunDe1e Gui - Clean Text Edition (No Strokes)
 -- ==========================================
 
 local Players = game:GetService("Players")
@@ -15,7 +15,7 @@ ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
 
 -------------------------------------------------
--- 1. Mini Floating Icon (ทรงสี่เหลี่ยม กรอบ Cyan)
+-- 1. Mini Floating Icon (ไม่มีกรอบข้อความ)
 -------------------------------------------------
 local MiniIcon = Instance.new("TextButton")
 MiniIcon.Name = "TsunDe1eMiniIcon"
@@ -26,11 +26,12 @@ MiniIcon.BorderSizePixel = 0
 MiniIcon.Text = "Hmph!"
 MiniIcon.TextColor3 = Color3.fromRGB(0, 255, 255)
 MiniIcon.TextSize = 14
-MiniIcon.Font = Enum.Font.SourceSans
+MiniIcon.Font = Enum.Font.SourceSans -- ฟอนต์บางปกติ ไม่มีกรอบทับ
 MiniIcon.Active = true
 MiniIcon.Draggable = true
 MiniIcon.Parent = ScreenGui
 
+-- กรอบไอคอนหลัก (คงไว้เฉพาะกรอบปุ่มสี่เหลี่ยมตามดีไซน์)
 local IconStroke = Instance.new("UIStroke")
 IconStroke.Color = Color3.fromRGB(0, 255, 255)
 IconStroke.Thickness = 1.5
@@ -75,7 +76,7 @@ MiniIcon.MouseButton1Up:Connect(function()
 end)
 
 -------------------------------------------------
--- 2. Main GUI Frame (ปรับขนาดให้สั้นกระชับขึ้น)
+-- 2. Main GUI Frame
 -------------------------------------------------
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
@@ -115,7 +116,7 @@ MiniIcon.MouseButton1Click:Connect(function()
 end)
 
 -------------------------------------------------
--- 3. Functions & Compact Layout
+-- 3. Functions (ทุกข้อความไม่มี UIStroke ที่ตัวหนังสือ)
 -------------------------------------------------
 local noclipEnabled = false
 local noclipConnection
@@ -124,21 +125,22 @@ local godModeConnection
 local flingEnabled = false
 local flingConnection
 
--- ปุ่ม Noclip (ย่อขนาดให้กระชับ)
+-- ปุ่ม Noclip
 local NoclipBtn = Instance.new("TextButton")
 NoclipBtn.Size = UDim2.new(0.9, 0, 0, 26)
 NoclipBtn.Position = UDim2.new(0.05, 0, 0, 42)
 NoclipBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+NoclipBtn.BorderSizePixel = 0
 NoclipBtn.Text = "Toggle Noclip: OFF"
 NoclipBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
 NoclipBtn.TextSize = 12
 NoclipBtn.Font = Enum.Font.SourceSansBold
 NoclipBtn.Parent = MainFrame
 
-local NoclipStroke = Instance.new("UIStroke")
-NoclipStroke.Color = Color3.fromRGB(0, 255, 255)
-NoclipStroke.Thickness = 1
-NoclipStroke.Parent = NoclipBtn
+local NoclipBtnStroke = Instance.new("UIStroke")
+NoclipBtnStroke.Color = Color3.fromRGB(0, 255, 255)
+NoclipBtnStroke.Thickness = 1
+NoclipBtnStroke.Parent = NoclipBtn
 
 NoclipBtn.MouseButton1Click:Connect(function()
     noclipEnabled = not noclipEnabled
@@ -167,16 +169,17 @@ local GodBtn = Instance.new("TextButton")
 GodBtn.Size = UDim2.new(0.9, 0, 0, 26)
 GodBtn.Position = UDim2.new(0.05, 0, 0, 72)
 GodBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+GodBtn.BorderSizePixel = 0
 GodBtn.Text = "Toggle God Mode: OFF"
 GodBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
 GodBtn.TextSize = 12
 GodBtn.Font = Enum.Font.SourceSansBold
 GodBtn.Parent = MainFrame
 
-local GodStroke = Instance.new("UIStroke")
-GodStroke.Color = Color3.fromRGB(0, 255, 255)
-GodStroke.Thickness = 1
-GodStroke.Parent = GodBtn
+local GodBtnStroke = Instance.new("UIStroke")
+GodBtnStroke.Color = Color3.fromRGB(0, 255, 255)
+GodBtnStroke.Thickness = 1
+GodBtnStroke.Parent = GodBtn
 
 GodBtn.MouseButton1Click:Connect(function()
     godModeEnabled = not godModeEnabled
@@ -204,16 +207,17 @@ local FlingBtn = Instance.new("TextButton")
 FlingBtn.Size = UDim2.new(0.9, 0, 0, 26)
 FlingBtn.Position = UDim2.new(0.05, 0, 0, 102)
 FlingBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+FlingBtn.BorderSizePixel = 0
 FlingBtn.Text = "Toggle Fling Mode: OFF"
 FlingBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
 FlingBtn.TextSize = 12
 FlingBtn.Font = Enum.Font.SourceSansBold
 FlingBtn.Parent = MainFrame
 
-local FlingStroke = Instance.new("UIStroke")
-FlingStroke.Color = Color3.fromRGB(0, 255, 255)
-FlingStroke.Thickness = 1
-FlingStroke.Parent = FlingBtn
+local FlingBtnStroke = Instance.new("UIStroke")
+FlingBtnStroke.Color = Color3.fromRGB(0, 255, 255)
+FlingBtnStroke.Thickness = 1
+FlingBtnStroke.Parent = FlingBtn
 
 FlingBtn.MouseButton1Click:Connect(function()
     flingEnabled = not flingEnabled
@@ -239,7 +243,7 @@ FlingBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- ช่องกรอกความเร็ว Bang (1-150)
+-- ช่องความเร็ว Bang
 local SpeedLabel = Instance.new("TextLabel")
 SpeedLabel.Size = UDim2.new(0.5, 0, 0, 22)
 SpeedLabel.Position = UDim2.new(0.05, 0, 0, 132)
@@ -255,16 +259,17 @@ local SpeedBox = Instance.new("TextBox")
 SpeedBox.Size = UDim2.new(0.38, 0, 0, 22)
 SpeedBox.Position = UDim2.new(0.57, 0, 0, 132)
 SpeedBox.BackgroundColor3 = Color3.fromRGB(245, 245, 245)
+SpeedBox.BorderSizePixel = 0
 SpeedBox.Text = "25"
 SpeedBox.TextColor3 = Color3.fromRGB(0, 0, 0)
 SpeedBox.TextSize = 12
 SpeedBox.Font = Enum.Font.SourceSansBold
 SpeedBox.Parent = MainFrame
 
-local SpeedStroke = Instance.new("UIStroke")
-SpeedStroke.Color = Color3.fromRGB(0, 255, 255)
-SpeedStroke.Thickness = 1
-SpeedStroke.Parent = SpeedBox
+local SpeedBoxStroke = Instance.new("UIStroke")
+SpeedBoxStroke.Color = Color3.fromRGB(0, 255, 255)
+SpeedBoxStroke.Thickness = 1
+SpeedBoxStroke.Parent = SpeedBox
 
 -- รายชื่อผู้เล่น
 local ListLabel = Instance.new("TextLabel")
@@ -304,6 +309,7 @@ local function updatePlayerList()
             local pBtn = Instance.new("TextButton")
             pBtn.Size = UDim2.new(1, 0, 0, 24)
             pBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            pBtn.BorderSizePixel = 0
             pBtn.Text = "  " .. plr.Name
             pBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
             pBtn.TextSize = 11
@@ -327,36 +333,39 @@ Players.PlayerAdded:Connect(updatePlayerList)
 Players.PlayerRemoving:Connect(updatePlayerList)
 updatePlayerList()
 
--- ปุ่ม Bang และ Sit/Floor Bang
+-- ปุ่ม Bang
 local BangBtn = Instance.new("TextButton")
 BangBtn.Size = UDim2.new(0.9, 0, 0, 26)
 BangBtn.Position = UDim2.new(0.05, 0, 0, 268)
 BangBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+BangBtn.BorderSizePixel = 0
 BangBtn.Text = "Bang Target: OFF"
 BangBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
 BangBtn.TextSize = 12
 BangBtn.Font = Enum.Font.SourceSansBold
 BangBtn.Parent = MainFrame
 
-local BangStroke = Instance.new("UIStroke")
-BangStroke.Color = Color3.fromRGB(0, 255, 255)
-BangStroke.Thickness = 1
-BangStroke.Parent = BangBtn
+local BangBtnStroke = Instance.new("UIStroke")
+BangBtnStroke.Color = Color3.fromRGB(0, 255, 255)
+BangBtnStroke.Thickness = 1
+BangBtnStroke.Parent = BangBtn
 
+-- ปุ่ม Sit/Floor Bang
 local SitBangBtn = Instance.new("TextButton")
 SitBangBtn.Size = UDim2.new(0.9, 0, 0, 26)
 SitBangBtn.Position = UDim2.new(0.05, 0, 0, 298)
 SitBangBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+SitBangBtn.BorderSizePixel = 0
 SitBangBtn.Text = "Sit/Floor Bang Target: OFF"
 SitBangBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
 SitBangBtn.TextSize = 12
 SitBangBtn.Font = Enum.Font.SourceSansBold
 SitBangBtn.Parent = MainFrame
 
-local SitStroke = Instance.new("UIStroke")
-SitStroke.Color = Color3.fromRGB(0, 255, 255)
-SitStroke.Thickness = 1
-SitStroke.Parent = SitBangBtn
+local SitBangStroke = Instance.new("UIStroke")
+SitBangStroke.Color = Color3.fromRGB(0, 255, 255)
+SitBangStroke.Thickness = 1
+SitBangStroke.Parent = SitBangBtn
 
 local bangMode = false
 local sitBangMode = false
