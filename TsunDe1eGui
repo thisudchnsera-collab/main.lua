@@ -1,5 +1,5 @@
 -- ==========================================
--- TsunDe1e Gui - Ultimate Complete Edition
+-- TsunDe1e Gui - Free Slap Edition (No Target Needed)
 -- ==========================================
 
 local Players = game:GetService("Players")
@@ -75,7 +75,7 @@ MiniIcon.MouseButton1Up:Connect(function()
 end)
 
 -------------------------------------------------
--- 2. Main GUI Frame (ขยายความสูงให้พอดีกับปุ่มทั้งหมด)
+-- 2. Main GUI Frame
 -------------------------------------------------
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
@@ -249,7 +249,7 @@ Players.PlayerAdded:Connect(updatePlayerList)
 Players.PlayerRemoving:Connect(updatePlayerList)
 updatePlayerList()
 
--- Action Buttons (Bang, Sit Bang, Head shot!, meh)
+-- Action Buttons
 local BangBtn = Instance.new("TextButton")
 BangBtn.Size = UDim2.new(0.9, 0, 0, 26)
 BangBtn.Position = UDim2.new(0.05, 0, 0, 205)
@@ -350,10 +350,9 @@ RunService.Stepped:Connect(function()
         local targetRoot = selectedTarget.Character.HumanoidRootPart
         if humanoid then humanoid.Sit = true end
         myRoot.CFrame = targetRoot.CFrame * CFrame.new(0, -0.5, -1 + math.sin(tick() * speed) * 0.8) * CFrame.Angles(math.rad(90), 0, 0)
-    elseif headShotMode and selectedTarget and selectedTarget.Character and selectedTarget.Character:FindFirstChild("HumanoidRootPart") then
-        local targetRoot = selectedTarget.Character.HumanoidRootPart
+    elseif headShotMode then
+        -- ตบอากาศ/ตบ NPC ได้ทันทีโดยไม่ต้องเลือกเป้าหมาย
         if humanoid then humanoid.Sit = false end
-        myRoot.CFrame = targetRoot.CFrame * CFrame.new(0.8, 1.5, 1.2)
         pcall(function()
             local shoulder = char:FindFirstChild("Right Shoulder", true) or char:FindFirstChild("RightShoulder", true)
             if shoulder then
@@ -361,10 +360,9 @@ RunService.Stepped:Connect(function()
                 shoulder.C0 = CFrame.new(1, 0.5, 0) * CFrame.Angles(math.rad(120 + math.sin(tick() * speed) * 40), 0, 0)
             end
         end)
-    elseif mehMode and selectedTarget and selectedTarget.Character and selectedTarget.Character:FindFirstChild("HumanoidRootPart") then
-        local targetRoot = selectedTarget.Character.HumanoidRootPart
+    elseif mehMode then
+        -- ตบไหล่อากาศ/ตบ NPC ได้ทันทีโดยไม่ต้องเลือกเป้าหมาย
         if humanoid then humanoid.Sit = false end
-        myRoot.CFrame = targetRoot.CFrame * CFrame.new(1.2, 0.5, 1.2)
         pcall(function()
             local shoulder = char:FindFirstChild("Right Shoulder", true) or char:FindFirstChild("RightShoulder", true)
             if shoulder then
@@ -432,7 +430,6 @@ SitBangBtn.MouseButton1Click:Connect(function()
 end)
 
 HeadShotBtn.MouseButton1Click:Connect(function()
-    if not selectedTarget then return end
     headShotMode = not headShotMode
     bangMode = false
     sitBangMode = false
@@ -461,7 +458,6 @@ HeadShotBtn.MouseButton1Click:Connect(function()
 end)
 
 MehBtn.MouseButton1Click:Connect(function()
-    if not selectedTarget then return end
     mehMode = not mehMode
     bangMode = false
     sitBangMode = false
