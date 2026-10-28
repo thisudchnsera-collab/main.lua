@@ -1,5 +1,5 @@
 -- ==========================================
--- TsunDe1e Gui - Final Fix (Thin Icon Text)
+-- TsunDe1e Gui - Final Perfect Edition
 -- ==========================================
 
 local Players = game:GetService("Players")
@@ -15,7 +15,7 @@ ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
 
 -------------------------------------------------
--- 1. Mini Floating Icon (เอา UIStroke ออกจากตัวอักษรแล้ว เหลือแค่ตัวหนังสือบางๆ คลีนๆ)
+-- 1. Mini Floating Icon (ฟอนต์บางคลีน ไม่มี UIStroke ที่ตัวหนังสือ)
 -------------------------------------------------
 local MiniIcon = Instance.new("TextButton")
 MiniIcon.Name = "TsunDe1eMiniIcon"
@@ -31,7 +31,7 @@ MiniIcon.Active = true
 MiniIcon.Draggable = true
 MiniIcon.Parent = ScreenGui
 
--- กรอบสี่เหลี่ยมรอบปุ่ม (ตัวนี้ไว้เปลี่ยนสีตอนล็อกตำแหน่ง)
+-- กรอบสี่เหลี่ยมรอบปุ่ม (เปลี่ยนสีตอนล็อกตำแหน่ง)
 local IconStroke = Instance.new("UIStroke")
 IconStroke.Color = Color3.fromRGB(0, 255, 255)
 IconStroke.Thickness = 1.5
@@ -76,12 +76,12 @@ MiniIcon.MouseButton1Up:Connect(function()
 end)
 
 -------------------------------------------------
--- 2. Main GUI Frame
+-- 2. Main GUI Frame (ปรับขนาดให้กระชับหลังเอา Fling ออก)
 -------------------------------------------------
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.new(0, 300, 0, 440)
-MainFrame.Position = UDim2.new(0.5, -150, 0.5, -220)
+MainFrame.Size = UDim2.new(0, 300, 0, 410)
+MainFrame.Position = UDim2.new(0.5, -150, 0.5, -205)
 MainFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 MainFrame.BorderSizePixel = 0
 MainFrame.Visible = false
@@ -116,12 +116,10 @@ MiniIcon.MouseButton1Click:Connect(function()
 end)
 
 -------------------------------------------------
--- 3. Functions
+-- 3. Functions (Noclip, Speed, Bang, Jerk off)
 -------------------------------------------------
 local noclipEnabled = false
 local noclipConnection
-local flingEnabled = false
-local flingConnection
 
 -- Noclip Button
 local NoclipBtn = Instance.new("TextButton")
@@ -162,62 +160,10 @@ NoclipBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- Pro Fling Button (ดีดคนอื่นปลิว เรายืนสวยๆ นิ่งๆ)
-local FlingBtn = Instance.new("TextButton")
-FlingBtn.Size = UDim2.new(0.9, 0, 0, 26)
-FlingBtn.Position = UDim2.new(0.05, 0, 0, 75)
-FlingBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
-FlingBtn.BorderSizePixel = 0
-FlingBtn.Text = "Toggle Fling Mode: OFF"
-FlingBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
-FlingBtn.TextSize = 12
-FlingBtn.Font = Enum.Font.SourceSansBold
-FlingBtn.Parent = MainFrame
-
-local FlingBtnStroke = Instance.new("UIStroke")
-FlingBtnStroke.Color = Color3.fromRGB(0, 255, 255)
-FlingBtnStroke.Thickness = 1
-FlingBtnStroke.Parent = FlingBtn
-
-FlingBtn.MouseButton1Click:Connect(function()
-    flingEnabled = not flingEnabled
-    if flingEnabled then
-        FlingBtn.Text = "Toggle Fling Mode: ON"
-        FlingBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 255)
-        FlingBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-        flingConnection = RunService.Stepped:Connect(function()
-            local char = LocalPlayer.Character
-            if char and char:FindFirstChild("HumanoidRootPart") then
-                local root = char.HumanoidRootPart
-                local vel = root.Velocity
-                root.Velocity = Vector3.new(vel.X, 0, vel.Z) + Vector3.new(0, 30000, 0)
-                local bav = root:FindFirstChild("TsunDe1eFlingVelocity")
-                if not bav then
-                    bav = Instance.new("BodyAngularVelocity")
-                    bav.Name = "TsunDe1eFlingVelocity"
-                    bav.MaxTorque = Vector3.new(math.huge, math.huge, math.huge)
-                    bav.AngularVelocity = Vector3.new(0, 5000, 0)
-                    bav.Parent = root
-                end
-            end
-        end)
-    else
-        FlingBtn.Text = "Toggle Fling Mode: OFF"
-        FlingBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
-        FlingBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
-        if flingConnection then flingConnection:Disconnect() end
-        local char = LocalPlayer.Character
-        if char and char:FindFirstChild("HumanoidRootPart") then
-            local bav = char.HumanoidRootPart:FindFirstChild("TsunDe1eFlingVelocity")
-            if bav then bav:Destroy() end
-        end
-    end
-end)
-
 -- Speed Box
 local SpeedLabel = Instance.new("TextLabel")
 SpeedLabel.Size = UDim2.new(0.5, 0, 0, 22)
-SpeedLabel.Position = UDim2.new(0.05, 0, 0, 108)
+SpeedLabel.Position = UDim2.new(0.05, 0, 0, 78)
 SpeedLabel.BackgroundTransparency = 1
 SpeedLabel.Text = "Speed (1-150):"
 SpeedLabel.TextColor3 = Color3.fromRGB(50, 50, 50)
@@ -228,7 +174,7 @@ SpeedLabel.Parent = MainFrame
 
 local SpeedBox = Instance.new("TextBox")
 SpeedBox.Size = UDim2.new(0.38, 0, 0, 22)
-SpeedBox.Position = UDim2.new(0.57, 0, 0, 108)
+SpeedBox.Position = UDim2.new(0.57, 0, 0, 78)
 SpeedBox.BackgroundColor3 = Color3.fromRGB(245, 245, 245)
 SpeedBox.BorderSizePixel = 0
 SpeedBox.Text = "25"
@@ -245,7 +191,7 @@ SpeedBoxStroke.Parent = SpeedBox
 -- Player List
 local ListLabel = Instance.new("TextLabel")
 ListLabel.Size = UDim2.new(0.9, 0, 0, 18)
-ListLabel.Position = UDim2.new(0.05, 0, 0, 135)
+ListLabel.Position = UDim2.new(0.05, 0, 0, 105)
 ListLabel.BackgroundTransparency = 1
 ListLabel.Text = "Select Target Player:"
 ListLabel.TextColor3 = Color3.fromRGB(50, 50, 50)
@@ -256,7 +202,7 @@ ListLabel.Parent = MainFrame
 
 local ScrollingFrame = Instance.new("ScrollingFrame")
 ScrollingFrame.Size = UDim2.new(0.9, 0, 0, 75)
-ScrollingFrame.Position = UDim2.new(0.05, 0, 0, 155)
+ScrollingFrame.Position = UDim2.new(0.05, 0, 0, 125)
 ScrollingFrame.BackgroundColor3 = Color3.fromRGB(245, 245, 245)
 ScrollingFrame.BorderSizePixel = 0
 ScrollingFrame.Parent = MainFrame
@@ -307,7 +253,7 @@ updatePlayerList()
 -- Action Buttons (Bang, Sit Bang, Jerk off)
 local BangBtn = Instance.new("TextButton")
 BangBtn.Size = UDim2.new(0.9, 0, 0, 26)
-BangBtn.Position = UDim2.new(0.05, 0, 0, 235)
+BangBtn.Position = UDim2.new(0.05, 0, 0, 205)
 BangBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
 BangBtn.BorderSizePixel = 0
 BangBtn.Text = "Bang Target: OFF"
@@ -323,7 +269,7 @@ BangBtnStroke.Parent = BangBtn
 
 local SitBangBtn = Instance.new("TextButton")
 SitBangBtn.Size = UDim2.new(0.9, 0, 0, 26)
-SitBangBtn.Position = UDim2.new(0.05, 0, 0, 265)
+SitBangBtn.Position = UDim2.new(0.05, 0, 0, 235)
 SitBangBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
 SitBangBtn.BorderSizePixel = 0
 SitBangBtn.Text = "Sit/Floor Bang Target: OFF"
@@ -339,7 +285,7 @@ SitBangStroke.Parent = SitBangBtn
 
 local JerkBtn = Instance.new("TextButton")
 JerkBtn.Size = UDim2.new(0.9, 0, 0, 26)
-JerkBtn.Position = UDim2.new(0.05, 0, 0, 295)
+JerkBtn.Position = UDim2.new(0.05, 0, 0, 265)
 JerkBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
 JerkBtn.BorderSizePixel = 0
 JerkBtn.Text = "Jerk off: OFF"
@@ -378,7 +324,8 @@ RunService.Stepped:Connect(function()
         pcall(function()
             local shoulder = char:FindFirstChild("Right Shoulder", true) or char:FindFirstChild("RightShoulder", true)
             if shoulder then
-                shoulder.C0 = CFrame.new(1, 0.5, 0) * CFrame.Angles(math.rad(90 + math.sin(tick() * speed) * 40), math.rad(15), 0)
+                -- แขนขวาพุ่งมาด้านหน้าตรงเป้าแล้วขยับชักรัวๆ ตามสปีด
+                shoulder.C0 = CFrame.new(1, 0.5, 0) * CFrame.Angles(math.rad(70 + math.sin(tick() * speed) * 25), math.rad(10), 0)
             end
         end)
     end
