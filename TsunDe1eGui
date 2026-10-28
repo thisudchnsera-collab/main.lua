@@ -1,5 +1,5 @@
 -- ==========================================
--- TsunDe1e Gui - Perfect Jerk Edition (Fixed Arm)
+-- TsunDe1e Gui - Slap Edition (Head shot & meh)
 -- ==========================================
 
 local Players = game:GetService("Players")
@@ -249,7 +249,7 @@ Players.PlayerAdded:Connect(updatePlayerList)
 Players.PlayerRemoving:Connect(updatePlayerList)
 updatePlayerList()
 
--- Action Buttons
+-- Action Buttons (Bang, Head shot!, meh)
 local BangBtn = Instance.new("TextButton")
 BangBtn.Size = UDim2.new(0.9, 0, 0, 26)
 BangBtn.Position = UDim2.new(0.05, 0, 0, 205)
@@ -266,43 +266,41 @@ BangBtnStroke.Color = Color3.fromRGB(0, 255, 255)
 BangBtnStroke.Thickness = 1
 BangBtnStroke.Parent = BangBtn
 
-local SitBangBtn = Instance.new("TextButton")
-SitBangBtn.Size = UDim2.new(0.9, 0, 0, 26)
-SitBangBtn.Position = UDim2.new(0.05, 0, 0, 235)
-SitBangBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
-SitBangBtn.BorderSizePixel = 0
-SitBangBtn.Text = "Sit/Floor Bang Target: OFF"
-SitBangBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
-SitBangBtn.TextSize = 12
-SitBangBtn.Font = Enum.Font.SourceSansBold
-SitBangBtn.Parent = MainFrame
+local HeadShotBtn = Instance.new("TextButton")
+HeadShotBtn.Size = UDim2.new(0.9, 0, 0, 26)
+HeadShotBtn.Position = UDim2.new(0.05, 0, 0, 235)
+HeadShotBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+HeadShotBtn.BorderSizePixel = 0
+HeadShotBtn.Text = "Head shot!: OFF"
+HeadShotBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+HeadShotBtn.TextSize = 12
+HeadShotBtn.Font = Enum.Font.SourceSansBold
+HeadShotBtn.Parent = MainFrame
 
-local SitBangStroke = Instance.new("UIStroke")
-SitBangStroke.Color = Color3.fromRGB(0, 255, 255)
-SitBangStroke.Thickness = 1
-SitBangStroke.Parent = SitBangBtn
+local HeadShotStroke = Instance.new("UIStroke")
+HeadShotStroke.Color = Color3.fromRGB(0, 255, 255)
+HeadShotStroke.Thickness = 1
+HeadShotStroke.Parent = HeadShotBtn
 
-local JerkBtn = Instance.new("TextButton")
-JerkBtn.Size = UDim2.new(0.9, 0, 0, 26)
-JerkBtn.Position = UDim2.new(0.05, 0, 0, 265)
-JerkBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
-JerkBtn.BorderSizePixel = 0
-JerkBtn.Text = "Jerk off: OFF"
-JerkBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
-JerkBtn.TextSize = 12
-JerkBtn.Font = Enum.Font.SourceSansBold
-JerkBtn.Parent = MainFrame
+local MehBtn = Instance.new("TextButton")
+MehBtn.Size = UDim2.new(0.9, 0, 0, 26)
+MehBtn.Position = UDim2.new(0.05, 0, 0, 265)
+MehBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+MehBtn.BorderSizePixel = 0
+MehBtn.Text = "meh: OFF"
+MehBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+MehBtn.TextSize = 12
+MehBtn.Font = Enum.Font.SourceSansBold
+MehBtn.Parent = MainFrame
 
-local JerkStroke = Instance.new("UIStroke")
-JerkStroke.Color = Color3.fromRGB(0, 255, 255)
-JerkStroke.Thickness = 1
-JerkStroke.Parent = JerkBtn
+local MehStroke = Instance.new("UIStroke")
+MehStroke.Color = Color3.fromRGB(0, 255, 255)
+MehStroke.Thickness = 1
+MehStroke.Parent = MehBtn
 
 local bangMode = false
-local sitBangMode = false
-local jerkMode = false
-
--- ตัวแปรเก็บค่าเริ่มต้นของข้อต่อแขนขวาแบบแม่นยำ
+local headShotMode = false
+local mehMode = false
 local storedShoulderC0 = nil
 
 local function resetArm()
@@ -330,20 +328,28 @@ RunService.Stepped:Connect(function()
     if bangMode and selectedTarget and selectedTarget.Character and selectedTarget.Character:FindFirstChild("HumanoidRootPart") then
         local targetRoot = selectedTarget.Character.HumanoidRootPart
         myRoot.CFrame = targetRoot.CFrame * CFrame.new(0, 0, 1.2 + math.sin(tick() * speed) * 0.8)
-    elseif sitBangMode and selectedTarget and selectedTarget.Character and selectedTarget.Character:FindFirstChild("HumanoidRootPart") then
+    elseif headShotMode and selectedTarget and selectedTarget.Character and selectedTarget.Character:FindFirstChild("HumanoidRootPart") then
         local targetRoot = selectedTarget.Character.HumanoidRootPart
-        if humanoid then humanoid.Sit = true end
-        myRoot.CFrame = targetRoot.CFrame * CFrame.new(0, -0.5, -1 + math.sin(tick() * speed) * 0.8) * CFrame.Angles(math.rad(90), 0, 0)
-    elseif jerkMode then
         if humanoid then humanoid.Sit = false end
+        myRoot.CFrame = targetRoot.CFrame * CFrame.new(0.8, 1.5, 1.2)
         pcall(function()
             local shoulder = char:FindFirstChild("Right Shoulder", true) or char:FindFirstChild("RightShoulder", true)
             if shoulder then
-                if not storedShoulderC0 then
-                    storedShoulderC0 = shoulder.C0
-                end
-                -- เซ็ตแขนขวาพุ่งตรงไปข้างหน้าแล้วขยับขึ้นลงตามสปีดอย่างแม่นยำ
-                shoulder.C0 = CFrame.new(1, 0.5, 0) * CFrame.Angles(math.rad(90), math.rad(0), math.rad(0)) * CFrame.Angles(math.rad(math.sin(tick() * speed) * 60), 0, 0)
+                if not storedShoulderC0 then storedShoulderC0 = shoulder.C0 end
+                -- ท่าตบหัว: สวิงมือฟาดลงจากด้านบน
+                shoulder.C0 = CFrame.new(1, 0.5, 0) * CFrame.Angles(math.rad(120 + math.sin(tick() * speed) * 40), 0, 0)
+            end
+        end)
+    elseif mehMode and selectedTarget and selectedTarget.Character and selectedTarget.Character:FindFirstChild("HumanoidRootPart") then
+        local targetRoot = selectedTarget.Character.HumanoidRootPart
+        if humanoid then humanoid.Sit = false end
+        myRoot.CFrame = targetRoot.CFrame * CFrame.new(1.2, 0.5, 1.2)
+        pcall(function()
+            local shoulder = char:FindFirstChild("Right Shoulder", true) or char:FindFirstChild("RightShoulder", true)
+            if shoulder then
+                if not storedShoulderC0 then storedShoulderC0 = shoulder.C0 end
+                -- ท่าตบไหล่ (meh): สวิงมือระดับไหล่กวนๆ
+                shoulder.C0 = CFrame.new(1, 0.5, 0) * CFrame.Angles(math.rad(70), 0, math.rad(math.sin(tick() * speed) * 45))
             end
         end)
     end
@@ -352,15 +358,15 @@ end)
 BangBtn.MouseButton1Click:Connect(function()
     if not selectedTarget then return end
     bangMode = not bangMode
-    sitBangMode = false
-    jerkMode = false
+    headShotMode = false
+    mehMode = false
     resetArm()
-    SitBangBtn.Text = "Sit/Floor Bang Target: OFF"
-    SitBangBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
-    SitBangBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
-    JerkBtn.Text = "Jerk off: OFF"
-    JerkBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
-    JerkBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+    HeadShotBtn.Text = "Head shot!: OFF"
+    HeadShotBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+    HeadShotBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+    MehBtn.Text = "meh: OFF"
+    MehBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+    MehBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
     
     if bangMode then
         BangBtn.Text = "Bang Target: ON"
@@ -373,49 +379,52 @@ BangBtn.MouseButton1Click:Connect(function()
     end
 end)
 
-SitBangBtn.MouseButton1Click:Connect(function()
+HeadShotBtn.MouseButton1Click:Connect(function()
     if not selectedTarget then return end
-    sitBangMode = not sitBangMode
+    headShotMode = not headShotMode
     bangMode = false
-    jerkMode = false
+    mehMode = false
     resetArm()
     BangBtn.Text = "Bang Target: OFF"
     BangBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
     BangBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
-    JerkBtn.Text = "Jerk off: OFF"
-    JerkBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
-    JerkBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+    MehBtn.Text = "meh: OFF"
+    MehBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+    MehBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
     
-    if sitBangMode then
-        SitBangBtn.Text = "Sit/Floor Bang Target: ON"
-        SitBangBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 255)
-        SitBangBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    if headShotMode then
+        HeadShotBtn.Text = "Head shot!: ON"
+        HeadShotBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 255)
+        HeadShotBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     else
-        SitBangBtn.Text = "Sit/Floor Bang Target: OFF"
-        SitBangBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
-        SitBangBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+        HeadShotBtn.Text = "Head shot!: OFF"
+        HeadShotBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+        HeadShotBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+        resetArm()
     end
 end)
 
-JerkBtn.MouseButton1Click:Connect(function()
-    jerkMode = not jerkMode
+MehBtn.MouseButton1Click:Connect(function()
+    if not selectedTarget then request = nil end
+    mehMode = not mehMode
     bangMode = false
-    sitBangMode = false
+    headShotMode = false
+    resetArm()
     BangBtn.Text = "Bang Target: OFF"
     BangBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
     BangBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
-    SitBangBtn.Text = "Sit/Floor Bang Target: OFF"
-    SitBangBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
-    SitBangBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+    HeadShotBtn.Text = "Head shot!: OFF"
+    HeadShotBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+    HeadShotBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
     
-    if jerkMode then
-        JerkBtn.Text = "Jerk off: ON"
-        JerkBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 255)
-        JerkBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    if mehMode then
+        MehBtn.Text = "meh: ON"
+        MehBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 255)
+        MehBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     else
-        JerkBtn.Text = "Jerk off: OFF"
-        JerkBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
-        JerkBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+        MehBtn.Text = "meh: OFF"
+        MehBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+        MehBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
         resetArm()
     end
 end)
