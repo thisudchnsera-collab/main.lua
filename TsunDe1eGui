@@ -1,5 +1,5 @@
 -- ==========================================
--- TsunDe1e Gui - Ultimate Jerk Edition (Fixed Arm Reset)
+-- TsunDe1e Gui - Infinity Yield Style Jerk Edition
 -- ==========================================
 
 local Players = game:GetService("Players")
@@ -249,7 +249,7 @@ Players.PlayerAdded:Connect(updatePlayerList)
 Players.PlayerRemoving:Connect(updatePlayerList)
 updatePlayerList()
 
--- Action Buttons (Bang, Sit Bang, Jerk off)
+-- Action Buttons
 local BangBtn = Instance.new("TextButton")
 BangBtn.Size = UDim2.new(0.9, 0, 0, 26)
 BangBtn.Position = UDim2.new(0.05, 0, 0, 205)
@@ -302,6 +302,9 @@ local bangMode = false
 local sitBangMode = false
 local jerkMode = false
 
+-- เก็บค่าเริ่มต้นของแขนขวาเพื่อใช้รีเซ็ตตอนปิดโหมด
+local originalRightShoulderC0 = nil
+
 RunService.Stepped:Connect(function()
     local char = LocalPlayer.Character
     if not char or not char:FindFirstChild("HumanoidRootPart") then return end
@@ -323,8 +326,11 @@ RunService.Stepped:Connect(function()
         pcall(function()
             local shoulder = char:FindFirstChild("Right Shoulder", true) or char:FindFirstChild("RightShoulder", true)
             if shoulder then
-                -- ล็อกแขนขวาตั้งตรง มือแข็งพุ่งไปข้างหน้าชักรัวๆ ตรงเป้า
-                shoulder.C0 = CFrame.new(1, 0.5, 0) * CFrame.Angles(math.rad(80), math.rad(0), math.rad(math.sin(tick() * speed) * 45))
+                if not originalRightShoulderC0 then
+                    originalRightShoulderC0 = shoulder.C0
+                end
+                -- สไตล์ Infinity Yield: แขนชี้ไปข้างหน้าแล้วชักรูดขึ้นลงตามสปีดเป๊ะๆ ไม่มีพับหลัง
+                shoulder.C0 = CFrame.new(1, 0.5, 0) * CFrame.Angles(math.rad(90), math.rad(0), math.rad(math.sin(tick() * speed) * 60))
             end
         end)
     end
@@ -370,7 +376,6 @@ SitBangBtn.MouseButton1Click:Connect(function()
         SitBangBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 255)
         SitBangBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     else
-        SitBangBtn.Text = "Sit/Floor Bang Total: OFF"
         SitBangBtn.Text = "Sit/Floor Bang Target: OFF"
         SitBangBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
         SitBangBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
@@ -396,12 +401,18 @@ JerkBtn.MouseButton1Click:Connect(function()
         JerkBtn.Text = "Jerk off: OFF"
         JerkBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
         JerkBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
-        -- พอกกดปิดโหมด รีเซ็ตแขนกลับท่าปกติทันที ไม่ค้าง
+        
+        -- คืนค่าแขนกลับสู่ปกติทันทีเมื่อปิดโหมด
         local char = LocalPlayer.Character
         if char then
-            local shoulder = char:FindFirstChild("Right Shoulder", true) or char:FindFirstChild("RightShoulder", true)
-            if shoulder then shoulder.C0 = CFrame.new(1, 0.5, 0) * CFrame.Angles(0, 0, 0) end
+            pcall(function()
+                local shoulder = char:FindFirstChild("Right Shoulder", true) or char:FindFirstChild("RightShoulder", true)
+                if shoulder and originalRightShoulderC0 then
+                    shoulder.C0 = originalRightShoulderC0
+                end
+            end)
         end
+        originalRightShoulderC0 = nil
     end
 end)
 
