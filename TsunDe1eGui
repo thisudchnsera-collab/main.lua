@@ -1,5 +1,5 @@
 -- ==========================================
--- TsunDe1e Gui - Max Range Head Slap Edition
+-- TsunDe1e Gui - Suck Dick Edition
 -- ==========================================
 
 local Players = game:GetService("Players")
@@ -75,12 +75,12 @@ MiniIcon.MouseButton1Up:Connect(function()
 end)
 
 -------------------------------------------------
--- 2. Main GUI Frame
+-- 2. Main GUI Frame (ขยายความสูงให้พอดีกับปุ่มใหม่)
 -------------------------------------------------
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.new(0, 300, 0, 470)
-MainFrame.Position = UDim2.new(0.5, -150, 0.5, -235)
+MainFrame.Size = UDim2.new(0, 300, 0, 410)
+MainFrame.Position = UDim2.new(0.5, -150, 0.5, -205)
 MainFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 MainFrame.BorderSizePixel = 0
 MainFrame.Visible = false
@@ -249,7 +249,7 @@ Players.PlayerAdded:Connect(updatePlayerList)
 Players.PlayerRemoving:Connect(updatePlayerList)
 updatePlayerList()
 
--- Action Buttons
+-- Action Buttons (Bang, Sit Bang, Suck dick p/r)
 local BangBtn = Instance.new("TextButton")
 BangBtn.Size = UDim2.new(0.9, 0, 0, 26)
 BangBtn.Position = UDim2.new(0.05, 0, 0, 205)
@@ -282,60 +282,30 @@ SitBangStroke.Color = Color3.fromRGB(0, 255, 255)
 SitBangStroke.Thickness = 1
 SitBangStroke.Parent = SitBangBtn
 
-local HeadShotBtn = Instance.new("TextButton")
-HeadShotBtn.Size = UDim2.new(0.9, 0, 0, 26)
-HeadShotBtn.Position = UDim2.new(0.05, 0, 0, 265)
-HeadShotBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
-HeadShotBtn.BorderSizePixel = 0
-HeadShotBtn.Text = "Head shot!: OFF"
-HeadShotBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
-HeadShotBtn.TextSize = 12
-HeadShotBtn.Font = Enum.Font.SourceSansBold
-HeadShotBtn.Parent = MainFrame
+local SuckBtn = Instance.new("TextButton")
+SuckBtn.Size = UDim2.new(0.9, 0, 0, 26)
+SuckBtn.Position = UDim2.new(0.05, 0, 0, 265)
+SuckBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+SuckBtn.BorderSizePixel = 0
+SuckBtn.Text = "Suck dick p/r: OFF"
+SuckBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+SuckBtn.TextSize = 12
+SuckBtn.Font = Enum.Font.SourceSansBold
+SuckBtn.Parent = MainFrame
 
-local HeadShotStroke = Instance.new("UIStroke")
-HeadShotStroke.Color = Color3.fromRGB(0, 255, 255)
-HeadShotStroke.Thickness = 1
-HeadShotStroke.Parent = HeadShotBtn
-
-local MehBtn = Instance.new("TextButton")
-MehBtn.Size = UDim2.new(0.9, 0, 0, 26)
-MehBtn.Position = UDim2.new(0.05, 0, 0, 295)
-MehBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
-MehBtn.BorderSizePixel = 0
-MehBtn.Text = "meh: OFF"
-MehBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
-MehBtn.TextSize = 12
-MehBtn.Font = Enum.Font.SourceSansBold
-MehBtn.Parent = MainFrame
-
-local MehStroke = Instance.new("UIStroke")
-MehStroke.Color = Color3.fromRGB(0, 255, 255)
-MehStroke.Thickness = 1
-MehStroke.Parent = MehBtn
+local SuckStroke = Instance.new("UIStroke")
+SuckStroke.Color = Color3.fromRGB(0, 255, 255)
+SuckStroke.Thickness = 1
+SuckStroke.Parent = SuckBtn
 
 local bangMode = false
 local sitBangMode = false
-local headShotMode = false
-local mehMode = false
-local storedShoulderC0 = nil
-
-local function resetArm()
-    local char = LocalPlayer.Character
-    if char then
-        pcall(function()
-            local shoulder = char:FindFirstChild("Right Shoulder", true) or char:FindFirstChild("RightShoulder", true)
-            if shoulder and storedShoulderC0 then
-                shoulder.C0 = storedShoulderC0
-            end
-        end)
-    end
-    storedShoulderC0 = nil
-end
+local suckMode = false
 
 RunService.Stepped:Connect(function()
     local char = LocalPlayer.Character
     if not char or not char:FindFirstChild("HumanoidRootPart") then return end
+    local myRoot = char.HumanoidRootPart
     local humanoid = char:FindFirstChildOfClass("Humanoid")
     
     local rawSpeed = tonumber(SpeedBox.Text) or 25
@@ -344,44 +314,28 @@ RunService.Stepped:Connect(function()
     if bangMode and selectedTarget and selectedTarget.Character and selectedTarget.Character:FindFirstChild("HumanoidRootPart") then
         local targetRoot = selectedTarget.Character.HumanoidRootPart
         if humanoid then humanoid.Sit = false end
-        char.HumanoidRootPart.CFrame = targetRoot.CFrame * CFrame.new(0, 0, 1.2 + math.sin(tick() * speed) * 0.8)
+        myRoot.CFrame = targetRoot.CFrame * CFrame.new(0, 0, 1.2 + math.sin(tick() * speed) * 0.8)
     elseif sitBangMode and selectedTarget and selectedTarget.Character and selectedTarget.Character:FindFirstChild("HumanoidRootPart") then
         local targetRoot = selectedTarget.Character.HumanoidRootPart
         if humanoid then humanoid.Sit = true end
-        char.HumanoidRootPart.CFrame = targetRoot.CFrame * CFrame.new(0, -0.5, -1 + math.sin(tick() * speed) * 0.8) * CFrame.Angles(math.rad(90), 0, 0)
-    elseif headShotMode then
-        if humanoid then humanoid.Sit = false end
-        pcall(function()
-            local shoulder = char:FindFirstChild("Right Shoulder", true) or char:FindFirstChild("RightShoulder", true)
-            if shoulder then
-                if not storedShoulderC0 then storedShoulderC0 = shoulder.C0 end
-                -- ปรับระยะและองศาให้แขนชูขึ้นสูงพุ่งไปข้างหน้าระดับหัวพอดี ลูปสวิงกว้างสะใจ
-                shoulder.C0 = CFrame.new(1, 0.8, -0.2) * CFrame.Angles(math.rad(140 + math.sin(tick() * speed) * 50), math.rad(10), 0)
-            end
-        end)
-    elseif mehMode then
-        if humanoid then humanoid.Sit = false end
-        pcall(function()
-            local shoulder = char:FindFirstChild("Right Shoulder", true) or char:FindFirstChild("RightShoulder", true)
-            if shoulder then
-                if not storedShoulderC0 then storedShoulderC0 = shoulder.C0 end
-                shoulder.C0 = CFrame.new(1, 0.5, 0) * CFrame.Angles(math.rad(75), 0, math.rad(math.sin(tick() * speed) * 40))
-            end
-        end)
+        myRoot.CFrame = targetRoot.CFrame * CFrame.new(0, -1, -1.2 + math.sin(tick() * speed) * 0.8) * CFrame.Angles(math.rad(0), math.rad(180), 0)
+    elseif suckMode and selectedTarget and selectedTarget.Character and selectedTarget.Character:FindFirstChild("HumanoidRootPart") then
+        local targetRoot = selectedTarget.Character.HumanoidRootPart
+        if humanoid then humanoid.Sit = true end
+        -- นั่งระดับก้นติดพื้น ขยับเข้าออกระยะประชิด 10 เซนติเมตรตรงเป้ากางเกงเป๊ะๆ
+        myRoot.CFrame = targetRoot.CFrame * CFrame.new(0, -1.5, -0.6 + math.sin(tick() * speed) * 0.2) * CFrame.Angles(math.rad(0), math.rad(180), 0)
     end
 end)
 
 BangBtn.MouseButton1Click:Connect(function()
     if not selectedTarget then return end
     bangMode = not bangMode
-    sitBangMode, headShotMode, mehMode = false, false, false
-    resetArm()
+    sitBangMode = false
+    suckMode = false
     SitBangBtn.Text = "Sit/Floor Bang Target: OFF"
     SitBangBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
-    HeadShotBtn.Text = "Head shot!: OFF"
-    HeadShotBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
-    MehBtn.Text = "meh: OFF"
-    MehBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+    SuckBtn.Text = "Suck dick p/r: OFF"
+    SuckBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
     
     if bangMode then
         BangBtn.Text = "Bang Target: ON"
@@ -395,14 +349,12 @@ end)
 SitBangBtn.MouseButton1Click:Connect(function()
     if not selectedTarget then return end
     sitBangMode = not sitBangMode
-    bangMode, headShotMode, mehMode = false, false, false
-    resetArm()
+    bangMode = false
+    suckMode = false
     BangBtn.Text = "Bang Target: OFF"
     BangBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
-    HeadShotBtn.Text = "Head shot!: OFF"
-    HeadShotBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
-    MehBtn.Text = "meh: OFF"
-    MehBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+    SuckBtn.Text = "Suck dick p/r: OFF"
+    SuckBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
     
     if sitBangMode then
         SitBangBtn.Text = "Sit/Floor Bang Target: ON"
@@ -413,45 +365,22 @@ SitBangBtn.MouseButton1Click:Connect(function()
     end
 end)
 
-HeadShotBtn.MouseButton1Click:Connect(function()
-    headShotMode = not headShotMode
-    bangMode, sitBangMode, mehMode = false, false, false
-    resetArm()
+SuckBtn.MouseButton1Click:Connect(function()
+    if not selectedTarget then return end
+    suckMode = not suckMode
+    bangMode = false
+    sitBangMode = false
     BangBtn.Text = "Bang Target: OFF"
     BangBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
     SitBangBtn.Text = "Sit/Floor Bang Target: OFF"
     SitBangBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
-    MehBtn.Text = "meh: OFF"
-    MehBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
     
-    if headShotMode then
-        HeadShotBtn.Text = "Head shot!: ON"
-        HeadShotBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 255)
+    if suckMode then
+        SuckBtn.Text = "Suck dick p/r: ON"
+        SuckBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 255)
     else
-        HeadShotBtn.Text = "Head shot!: OFF"
-        HeadShotBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
-        resetArm()
-    end
-end)
-
-MehBtn.MouseButton1Click:Connect(function()
-    mehMode = not mehMode
-    bangMode, sitBangMode, headShotMode = false, false, false
-    resetArm()
-    BangBtn.Text = "Bang Target: OFF"
-    BangBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
-    SitBangBtn.Text = "Sit/Floor Bang Target: OFF"
-    SitBangBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
-    HeadShotBtn.Text = "Head shot!: OFF"
-    HeadShotBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
-    
-    if mehMode then
-        MehBtn.Text = "meh: ON"
-        MehBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 255)
-    else
-        MehBtn.Text = "meh: OFF"
-        MehBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
-        resetArm()
+        SuckBtn.Text = "Suck dick p/r: OFF"
+        SuckBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
     end
 end)
 
