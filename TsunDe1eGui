@@ -1,5 +1,5 @@
 -- ==========================================
--- TsunDe1e Gui - Slap Edition (Head shot & meh)
+-- TsunDe1e Gui - Ultimate Complete Edition
 -- ==========================================
 
 local Players = game:GetService("Players")
@@ -75,12 +75,12 @@ MiniIcon.MouseButton1Up:Connect(function()
 end)
 
 -------------------------------------------------
--- 2. Main GUI Frame
+-- 2. Main GUI Frame (ขยายความสูงให้พอดีกับปุ่มทั้งหมด)
 -------------------------------------------------
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.new(0, 300, 0, 410)
-MainFrame.Position = UDim2.new(0.5, -150, 0.5, -205)
+MainFrame.Size = UDim2.new(0, 300, 0, 470)
+MainFrame.Position = UDim2.new(0.5, -150, 0.5, -235)
 MainFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 MainFrame.BorderSizePixel = 0
 MainFrame.Visible = false
@@ -249,7 +249,7 @@ Players.PlayerAdded:Connect(updatePlayerList)
 Players.PlayerRemoving:Connect(updatePlayerList)
 updatePlayerList()
 
--- Action Buttons (Bang, Head shot!, meh)
+-- Action Buttons (Bang, Sit Bang, Head shot!, meh)
 local BangBtn = Instance.new("TextButton")
 BangBtn.Size = UDim2.new(0.9, 0, 0, 26)
 BangBtn.Position = UDim2.new(0.05, 0, 0, 205)
@@ -266,9 +266,25 @@ BangBtnStroke.Color = Color3.fromRGB(0, 255, 255)
 BangBtnStroke.Thickness = 1
 BangBtnStroke.Parent = BangBtn
 
+local SitBangBtn = Instance.new("TextButton")
+SitBangBtn.Size = UDim2.new(0.9, 0, 0, 26)
+SitBangBtn.Position = UDim2.new(0.05, 0, 0, 235)
+SitBangBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+SitBangBtn.BorderSizePixel = 0
+SitBangBtn.Text = "Sit/Floor Bang Target: OFF"
+SitBangBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+SitBangBtn.TextSize = 12
+SitBangBtn.Font = Enum.Font.SourceSansBold
+SitBangBtn.Parent = MainFrame
+
+local SitBangStroke = Instance.new("UIStroke")
+SitBangStroke.Color = Color3.fromRGB(0, 255, 255)
+SitBangStroke.Thickness = 1
+SitBangStroke.Parent = SitBangBtn
+
 local HeadShotBtn = Instance.new("TextButton")
 HeadShotBtn.Size = UDim2.new(0.9, 0, 0, 26)
-HeadShotBtn.Position = UDim2.new(0.05, 0, 0, 235)
+HeadShotBtn.Position = UDim2.new(0.05, 0, 0, 265)
 HeadShotBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
 HeadShotBtn.BorderSizePixel = 0
 HeadShotBtn.Text = "Head shot!: OFF"
@@ -284,7 +300,7 @@ HeadShotStroke.Parent = HeadShotBtn
 
 local MehBtn = Instance.new("TextButton")
 MehBtn.Size = UDim2.new(0.9, 0, 0, 26)
-MehBtn.Position = UDim2.new(0.05, 0, 0, 265)
+MehBtn.Position = UDim2.new(0.05, 0, 0, 295)
 MehBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
 MehBtn.BorderSizePixel = 0
 MehBtn.Text = "meh: OFF"
@@ -299,6 +315,7 @@ MehStroke.Thickness = 1
 MehStroke.Parent = MehBtn
 
 local bangMode = false
+local sitBangMode = false
 local headShotMode = false
 local mehMode = false
 local storedShoulderC0 = nil
@@ -327,7 +344,12 @@ RunService.Stepped:Connect(function()
     
     if bangMode and selectedTarget and selectedTarget.Character and selectedTarget.Character:FindFirstChild("HumanoidRootPart") then
         local targetRoot = selectedTarget.Character.HumanoidRootPart
+        if humanoid then humanoid.Sit = false end
         myRoot.CFrame = targetRoot.CFrame * CFrame.new(0, 0, 1.2 + math.sin(tick() * speed) * 0.8)
+    elseif sitBangMode and selectedTarget and selectedTarget.Character and selectedTarget.Character:FindFirstChild("HumanoidRootPart") then
+        local targetRoot = selectedTarget.Character.HumanoidRootPart
+        if humanoid then humanoid.Sit = true end
+        myRoot.CFrame = targetRoot.CFrame * CFrame.new(0, -0.5, -1 + math.sin(tick() * speed) * 0.8) * CFrame.Angles(math.rad(90), 0, 0)
     elseif headShotMode and selectedTarget and selectedTarget.Character and selectedTarget.Character:FindFirstChild("HumanoidRootPart") then
         local targetRoot = selectedTarget.Character.HumanoidRootPart
         if humanoid then humanoid.Sit = false end
@@ -336,7 +358,6 @@ RunService.Stepped:Connect(function()
             local shoulder = char:FindFirstChild("Right Shoulder", true) or char:FindFirstChild("RightShoulder", true)
             if shoulder then
                 if not storedShoulderC0 then storedShoulderC0 = shoulder.C0 end
-                -- ท่าตบหัว: สวิงมือฟาดลงจากด้านบน
                 shoulder.C0 = CFrame.new(1, 0.5, 0) * CFrame.Angles(math.rad(120 + math.sin(tick() * speed) * 40), 0, 0)
             end
         end)
@@ -348,7 +369,6 @@ RunService.Stepped:Connect(function()
             local shoulder = char:FindFirstChild("Right Shoulder", true) or char:FindFirstChild("RightShoulder", true)
             if shoulder then
                 if not storedShoulderC0 then storedShoulderC0 = shoulder.C0 end
-                -- ท่าตบไหล่ (meh): สวิงมือระดับไหล่กวนๆ
                 shoulder.C0 = CFrame.new(1, 0.5, 0) * CFrame.Angles(math.rad(70), 0, math.rad(math.sin(tick() * speed) * 45))
             end
         end)
@@ -358,9 +378,13 @@ end)
 BangBtn.MouseButton1Click:Connect(function()
     if not selectedTarget then return end
     bangMode = not bangMode
+    sitBangMode = false
     headShotMode = false
     mehMode = false
     resetArm()
+    SitBangBtn.Text = "Sit/Floor Bang Target: OFF"
+    SitBangBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+    SitBangBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
     HeadShotBtn.Text = "Head shot!: OFF"
     HeadShotBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
     HeadShotBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
@@ -379,15 +403,47 @@ BangBtn.MouseButton1Click:Connect(function()
     end
 end)
 
-HeadShotBtn.MouseButton1Click:Connect(function()
+SitBangBtn.MouseButton1Click:Connect(function()
     if not selectedTarget then return end
-    headShotMode = not headShotMode
+    sitBangMode = not sitBangMode
     bangMode = false
+    headShotMode = false
     mehMode = false
     resetArm()
     BangBtn.Text = "Bang Target: OFF"
     BangBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
     BangBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+    HeadShotBtn.Text = "Head shot!: OFF"
+    HeadShotBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+    HeadShotBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+    MehBtn.Text = "meh: OFF"
+    MehBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+    MehBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+    
+    if sitBangMode then
+        SitBangBtn.Text = "Sit/Floor Bang Target: ON"
+        SitBangBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 255)
+        SitBangBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    else
+        SitBangBtn.Text = "Sit/Floor Bang Target: OFF"
+        SitBangBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+        SitBangBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+    end
+end)
+
+HeadShotBtn.MouseButton1Click:Connect(function()
+    if not selectedTarget then return end
+    headShotMode = not headShotMode
+    bangMode = false
+    sitBangMode = false
+    mehMode = false
+    resetArm()
+    BangBtn.Text = "Bang Target: OFF"
+    BangBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+    BangBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+    SitBangBtn.Text = "Sit/Floor Bang Target: OFF"
+    SitBangBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+    SitBangBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
     MehBtn.Text = "meh: OFF"
     MehBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
     MehBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
@@ -405,14 +461,18 @@ HeadShotBtn.MouseButton1Click:Connect(function()
 end)
 
 MehBtn.MouseButton1Click:Connect(function()
-    if not selectedTarget then request = nil end
+    if not selectedTarget then return end
     mehMode = not mehMode
     bangMode = false
+    sitBangMode = false
     headShotMode = false
     resetArm()
     BangBtn.Text = "Bang Target: OFF"
     BangBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
     BangBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+    SitBangBtn.Text = "Sit/Floor Bang Target: OFF"
+    SitBangBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+    SitBangBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
     HeadShotBtn.Text = "Head shot!: OFF"
     HeadShotBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
     HeadShotBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
