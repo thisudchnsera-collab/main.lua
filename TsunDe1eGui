@@ -1,5 +1,5 @@
 -- ==========================================
--- TsunDe1e Gui - Hmph! Edition
+-- TsunDe1e Gui - Hmph! Edition (Classic Font)
 -- ==========================================
 
 local Players = game:GetService("Players")
@@ -16,7 +16,7 @@ ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
 
 -------------------------------------------------
--- 1. Mini Floating Icon (Square with Cyan border and "Hmph!")
+-- 1. Mini Floating Icon (ทรงสี่เหลี่ยมมุมแหลม กรอบ Cyan ฟอนต์ดั้งเดิมปกติ)
 -------------------------------------------------
 local MiniIcon = Instance.new("TextButton")
 MiniIcon.Name = "TsunDe1eMiniIcon"
@@ -26,8 +26,8 @@ MiniIcon.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
 MiniIcon.BorderSizePixel = 0
 MiniIcon.Text = "Hmph!"
 MiniIcon.TextColor3 = Color3.fromRGB(0, 255, 255)
-MiniIcon.TextSize = 14
-MiniIcon.Font = Enum.Font.GothamBold
+MiniIcon.TextSize = 15
+MiniIcon.Font = Enum.Font.SourceSans -- ฟอนต์ดั้งเดิม ความหนาปกติ
 MiniIcon.Active = true
 MiniIcon.Draggable = true
 MiniIcon.Parent = ScreenGui
@@ -76,7 +76,7 @@ MiniIcon.MouseButton1Up:Connect(function()
 end)
 
 -------------------------------------------------
--- 2. Main GUI Frame (White background, Cyan border, No close button)
+-- 2. Main GUI Frame (พื้นหลังขาว ขอบ Cyan ไม่มีปุ่มปิด)
 -------------------------------------------------
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
