@@ -15,7 +15,7 @@ ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
 
 -------------------------------------------------
--- 1. Mini Floating Icon (ทรงสี่เหลี่ยม กรอบ Cyan)
+-- 1. Mini Floating Icon (บังคับใช้ Asset ID 105816152070321)
 -------------------------------------------------
 local MiniIcon = Instance.new("ImageButton")
 MiniIcon.Name = "TsunDe1eMiniIcon"
