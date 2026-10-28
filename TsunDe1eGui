@@ -1,5 +1,5 @@
 -- ==========================================
--- TsunDe1e Gui - Final Perfect Edition
+-- TsunDe1e Gui - Ultimate Jerk Edition (Fixed Arm Reset)
 -- ==========================================
 
 local Players = game:GetService("Players")
@@ -15,7 +15,7 @@ ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
 
 -------------------------------------------------
--- 1. Mini Floating Icon (ฟอนต์บางคลีน ไม่มี UIStroke ที่ตัวหนังสือ)
+-- 1. Mini Floating Icon
 -------------------------------------------------
 local MiniIcon = Instance.new("TextButton")
 MiniIcon.Name = "TsunDe1eMiniIcon"
@@ -31,7 +31,6 @@ MiniIcon.Active = true
 MiniIcon.Draggable = true
 MiniIcon.Parent = ScreenGui
 
--- กรอบสี่เหลี่ยมรอบปุ่ม (เปลี่ยนสีตอนล็อกตำแหน่ง)
 local IconStroke = Instance.new("UIStroke")
 IconStroke.Color = Color3.fromRGB(0, 255, 255)
 IconStroke.Thickness = 1.5
@@ -76,7 +75,7 @@ MiniIcon.MouseButton1Up:Connect(function()
 end)
 
 -------------------------------------------------
--- 2. Main GUI Frame (ปรับขนาดให้กระชับหลังเอา Fling ออก)
+-- 2. Main GUI Frame
 -------------------------------------------------
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
@@ -116,7 +115,7 @@ MiniIcon.MouseButton1Click:Connect(function()
 end)
 
 -------------------------------------------------
--- 3. Functions (Noclip, Speed, Bang, Jerk off)
+-- 3. Functions
 -------------------------------------------------
 local noclipEnabled = false
 local noclipConnection
@@ -324,8 +323,8 @@ RunService.Stepped:Connect(function()
         pcall(function()
             local shoulder = char:FindFirstChild("Right Shoulder", true) or char:FindFirstChild("RightShoulder", true)
             if shoulder then
-                -- แขนขวาพุ่งมาด้านหน้าตรงเป้าแล้วขยับชักรัวๆ ตามสปีด
-                shoulder.C0 = CFrame.new(1, 0.5, 0) * CFrame.Angles(math.rad(70 + math.sin(tick() * speed) * 25), math.rad(10), 0)
+                -- ล็อกแขนขวาตั้งตรง มือแข็งพุ่งไปข้างหน้าชักรัวๆ ตรงเป้า
+                shoulder.C0 = CFrame.new(1, 0.5, 0) * CFrame.Angles(math.rad(80), math.rad(0), math.rad(math.sin(tick() * speed) * 45))
             end
         end)
     end
@@ -371,6 +370,7 @@ SitBangBtn.MouseButton1Click:Connect(function()
         SitBangBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 255)
         SitBangBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     else
+        SitBangBtn.Text = "Sit/Floor Bang Total: OFF"
         SitBangBtn.Text = "Sit/Floor Bang Target: OFF"
         SitBangBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
         SitBangBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
@@ -396,6 +396,12 @@ JerkBtn.MouseButton1Click:Connect(function()
         JerkBtn.Text = "Jerk off: OFF"
         JerkBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
         JerkBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+        -- พอกกดปิดโหมด รีเซ็ตแขนกลับท่าปกติทันที ไม่ค้าง
+        local char = LocalPlayer.Character
+        if char then
+            local shoulder = char:FindFirstChild("Right Shoulder", true) or char:FindFirstChild("RightShoulder", true)
+            if shoulder then shoulder.C0 = CFrame.new(1, 0.5, 0) * CFrame.Angles(0, 0, 0) end
+        end
     end
 end)
 
