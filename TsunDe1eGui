@@ -1,0 +1,265 @@
+-- ==========================================
+-- Tsunde1e Gui - Custom Delta Script (EN / Bold Font Edition)
+-- Header Color: Cyan | Asset ID: 105816152070321
+-- Sound ID: 122039713538884
+-- ==========================================
+
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local StarterGui = game:GetService("StarterGui")
+local LocalPlayer = Players.LocalPlayer
+
+-- Assets
+local ASSET_IMAGE = "rbxassetid://105816152070321"
+local SOUND_ID = "rbxassetid://122039713538884"
+
+-- ScreenGui Parent
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "Tsunde1eGuiSystem"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+
+-------------------------------------------------
+-- 1. Mini Floating Icon
+-------------------------------------------------
+local MiniIcon = Instance.new("ImageButton")
+MiniIcon.Name = "Tsunde1eMiniIcon"
+MiniIcon.Size = UDim2.new(0, 50, 0, 50)
+MiniIcon.Position = UDim2.new(0.1, 0, 0.2, 0)
+MiniIcon.Image = ASSET_IMAGE
+MiniIcon.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+MiniIcon.BorderSizePixel = 0
+MiniIcon.Active = true
+MiniIcon.Draggable = true
+MiniIcon.Parent = ScreenGui
+
+local IconCorner = Instance.new("UICorner")
+IconCorner.CornerRadius = UDim.new(0, 12)
+IconCorner.Parent = MiniIcon
+
+local IconStroke = Instance.new("UIStroke")
+IconStroke.Color = Color3.fromRGB(0, 255, 255)
+IconStroke.Thickness = 2
+IconStroke.Parent = MiniIcon
+
+local isLocked = false
+local holdTime = 0
+local holdThreshold = 1.5
+local holding = false
+
+local function showBadgeNotification(statusText)
+    pcall(function()
+        StarterGui:SetCore("SendNotification", {
+            Title = "www y.o.u.",
+            Text = statusText,
+            Icon = ASSET_IMAGE,
+            Duration = 3
+        })
+    end)
+end
+
+MiniIcon.MouseButton1Down:Connect(function()
+    holding = true
+    holdTime = tick()
+    task.delay(holdThreshold, function()
+        if holding and (tick() - holdTime >= holdThreshold) then
+            isLocked = not isLocked
+            MiniIcon.Draggable = not isLocked
+            if isLocked then
+                IconStroke.Color = Color3.fromRGB(255, 50, 50)
+                showBadgeNotification("Position Locked Successfully")
+            else
+                IconStroke.Color = Color3.fromRGB(0, 255, 255)
+                showBadgeNotification("Position Unlocked")
+            end
+        end
+    end)
+end)
+
+MiniIcon.MouseButton1Up:Connect(function()
+    holding = false
+end)
+
+-------------------------------------------------
+-- 2. Main GUI Frame
+-------------------------------------------------
+local MainFrame = Instance.new("ImageLabel")
+MainFrame.Name = "MainFrame"
+MainFrame.Size = UDim2.new(0, 320, 0, 380)
+MainFrame.Position = UDim2.new(0.5, -160, 0.5, -190)
+MainFrame.Image = ASSET_IMAGE
+MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+MainFrame.ScaleType = Enum.ScaleType.Crop
+MainFrame.Visible = false
+MainFrame.Active = true
+MainFrame.Draggable = true
+MainFrame.Parent = ScreenGui
+
+local FrameCorner = Instance.new("UICorner")
+FrameCorner.CornerRadius = UDim.new(0, 16)
+FrameCorner.Parent = MainFrame
+
+local FrameStroke = Instance.new("UIStroke")
+FrameStroke.Color = Color3.fromRGB(0, 255, 255)
+FrameStroke.Thickness = 2
+FrameStroke.Parent = MainFrame
+
+local DarkOverlay = Instance.new("Frame")
+DarkOverlay.Size = UDim2.new(1, 0, 1, 0)
+DarkOverlay.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+DarkOverlay.BackgroundTransparency = 0.4
+DarkOverlay.Parent = MainFrame
+local OverlayCorner = Instance.new("UICorner")
+OverlayCorner.CornerRadius = UDim.new(0, 16)
+OverlayCorner.Parent = DarkOverlay
+
+-- Title Header (Bold Font)
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, 0, 0, 45)
+Title.BackgroundTransparency = 1
+Title.Text = "Tsunde1e Gui"
+Title.TextColor3 = Color3.fromRGB(0, 255, 255)
+Title.TextSize = 22
+Title.Font = Enum.Font.GothamBold
+Title.Parent = MainFrame
+
+MiniIcon.MouseButton1Click:Connect(function()
+    if tick() - holdTime < holdThreshold then
+        MainFrame.Visible = not MainFrame.Visible
+    end
+end)
+
+-------------------------------------------------
+-- 3. Sound System
+-------------------------------------------------
+local SoundLabel = Instance.new("TextLabel")
+SoundLabel.Size = UDim2.new(0.9, 0, 0, 25)
+SoundLabel.Position = UDim2.new(0.05, 0, 0.16, 0)
+SoundLabel.BackgroundTransparency = 1
+SoundLabel.Text = "Volume Level (1 - 10000):"
+SoundLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+SoundLabel.TextSize = 13
+SoundLabel.Font = Enum.Font.GothamBold
+SoundLabel.TextXAlignment = Enum.TextXAlignment.Left
+SoundLabel.Parent = MainFrame
+
+local VolumeBox = Instance.new("TextBox")
+VolumeBox.Size = UDim2.new(0.9, 0, 0, 35)
+VolumeBox.Position = UDim2.new(0.05, 0, 0.23, 0)
+VolumeBox.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+VolumeBox.Text = "100"
+VolumeBox.TextColor3 = Color3.fromRGB(0, 255, 255)
+VolumeBox.TextSize = 15
+VolumeBox.Font = Enum.Font.GothamBold
+VolumeBox.PlaceholderText = "Enter number 1 - 10000"
+VolumeBox.Parent = MainFrame
+local BoxCorner = Instance.new("UICorner")
+BoxCorner.CornerRadius = UDim.new(0, 8)
+BoxCorner.Parent = VolumeBox
+
+VolumeBox:GetPropertyChangedSignal("Text"):Connect(function()
+    local num = tonumber(VolumeBox.Text)
+    if VolumeBox.Text ~= "" then
+        if not num then
+            VolumeBox.Text = VolumeBox.Text:gsub("%D", "")
+        elseif num > 10000 then
+            VolumeBox.Text = "10000"
+        elseif num < 1 and VolumeBox.Text ~= "0" then
+            VolumeBox.Text = "1"
+        end
+    end
+end)
+
+local TrollSound = Instance.new("Sound")
+TrollSound.Name = "Tsunde1eTrollSound"
+TrollSound.SoundId = SOUND_ID
+TrollSound.Volume = 1
+TrollSound.Looped = true
+
+local PlayBtn = Instance.new("TextButton")
+PlayBtn.Size = UDim2.new(0.9, 0, 0, 40)
+PlayBtn.Position = UDim2.new(0.05, 0, 0.35, 0)
+PlayBtn.BackgroundColor3 = Color3.fromRGB(0, 180, 180)
+PlayBtn.Text = "Play Troll Sound"
+PlayBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+PlayBtn.TextSize = 14
+PlayBtn.Font = Enum.Font.GothamBold
+PlayBtn.Parent = MainFrame
+local BtnCorner = Instance.new("UICorner")
+BtnCorner.CornerRadius = UDim.new(0, 8)
+BtnCorner.Parent = PlayBtn
+
+local isPlaying = false
+
+PlayBtn.MouseButton1Click:Connect(function()
+    local vol = tonumber(VolumeBox.Text) or 100
+    if vol > 10000 then vol = 10000 end
+    if vol < 1 then vol = 1 end
+    
+    isPlaying = not isPlaying
+    
+    if isPlaying then
+        PlayBtn.Text = "Stop Troll Sound"
+        PlayBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+        
+        local char = LocalPlayer.Character
+        if char and char:FindFirstChild("HumanoidRootPart") then
+            TrollSound.Parent = char.HumanoidRootPart
+            TrollSound.Volume = vol
+            TrollSound:Play()
+        end
+    else
+        PlayBtn.Text = "Play Troll Sound"
+        PlayBtn.BackgroundColor3 = Color3.fromRGB(0, 180, 180)
+        TrollSound:Stop()
+    end
+end)
+
+-------------------------------------------------
+-- 4. Force R6 Transform System
+-------------------------------------------------
+local R6Btn = Instance.new("TextButton")
+R6Btn.Size = UDim2.new(0.9, 0, 0, 45)
+R6Btn.Position = UDim2.new(0.05, 0, 0.52, 0)
+R6Btn.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
+R6Btn.Text = "Convert to R6"
+R6Btn.TextColor3 = Color3.fromRGB(0, 255, 255)
+R6Btn.TextSize = 14
+R6Btn.Font = Enum.Font.GothamBold
+R6Btn.Parent = MainFrame
+local R6Corner = Instance.new("UICorner")
+R6Corner.CornerRadius = UDim.new(0, 8)
+R6Corner.Parent = R6Btn
+
+local R6Stroke = Instance.new("UIStroke")
+R6Stroke.Color = Color3.fromRGB(0, 255, 255)
+R6Stroke.Thickness = 1
+R6Stroke.Parent = R6Btn
+
+pcall(function()
+    R6Btn.MouseButton1Click:Connect(function()
+        local char = LocalPlayer.Character
+        if char and char:FindFirstChild("Humanoid") then
+            local r6Script = game:HttpGet("https://raw.githubusercontent.com/ocif/R6-Converter/main/script.lua", true)
+            if r6Script then
+                loadstring(r6Script)()
+                showBadgeNotification("Successfully Converted to R6")
+            end
+        end
+    end)
+end)
+
+-------------------------------------------------
+-- Footer
+-------------------------------------------------
+local Footer = Instance.new("TextLabel")
+Footer.Size = UDim2.new(1, 0, 0, 25)
+Footer.Position = UDim2.new(0, 0, 0.9, 0)
+Footer.BackgroundTransparency = 1
+Footer.Text = "www y.o.u. | Tsunde1e Edition"
+Footer.TextColor3 = Color3.fromRGB(150, 150, 150)
+Footer.TextSize = 11
+Footer.Font = Enum.Font.GothamBold
+Footer.Parent = MainFrame
+
+print("Tsunde1e Gui Loaded Successfully")
