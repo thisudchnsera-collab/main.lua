@@ -1,5 +1,5 @@
 -- ==========================================
--- TsunDe1e Gui - Jerk off Edition
+-- TsunDe1e Gui - Real Jerk off Edition (Right Hand)
 -- ==========================================
 
 local Players = game:GetService("Players")
@@ -75,7 +75,7 @@ MiniIcon.MouseButton1Up:Connect(function()
 end)
 
 -------------------------------------------------
--- 2. Main GUI Frame (ขยายความสูงเพิ่มนิดนึงให้พอดีกับปุ่มใหม่)
+-- 2. Main GUI Frame
 -------------------------------------------------
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
@@ -115,7 +115,7 @@ MiniIcon.MouseButton1Click:Connect(function()
 end)
 
 -------------------------------------------------
--- 3. Functions (Noclip, Fling, Speed, Bang, Jerk off)
+-- 3. Functions
 -------------------------------------------------
 local noclipEnabled = false
 local noclipConnection
@@ -346,9 +346,11 @@ local sitBangMode = false
 local jerkMode = false
 
 RunService.Stepped:Connect(function()
-    if not LocalPlayer.Character or not LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then return end
-    local myRoot = LocalPlayer.Character.HumanoidRootPart
-    local humanoid = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+    local char = LocalPlayer.Character
+    if not char or not char:FindFirstChild("HumanoidRootPart") then return end
+    local myRoot = char.HumanoidRootPart
+    local humanoid = char:FindFirstChildOfClass("Humanoid")
+    local rightArm = char:FindFirstChild("Right Arm") or char:FindFirstChild("RightLowerArm")
     
     local rawSpeed = tonumber(SpeedBox.Text) or 25
     local speed = math.clamp(rawSpeed, 1, 150)
@@ -361,8 +363,15 @@ RunService.Stepped:Connect(function()
         if humanoid then humanoid.Sit = true end
         myRoot.CFrame = targetRoot.CFrame * CFrame.new(0, -0.5, -1 + math.sin(tick() * speed) * 0.8) * CFrame.Angles(math.rad(90), 0, 0)
     elseif jerkMode then
-        if humanoid then humanoid.Sit = true end
-        myRoot.CFrame = myRoot.CFrame * CFrame.new(0, 0, math.sin(tick() * speed) * 0.1) * CFrame.Angles(math.rad(math.sin(tick() * speed) * 45), 0, 0)
+        -- ยืนตรงแล้วขยับมือขวาชักรัวๆ ตรงเป้าตัวเอง
+        if humanoid then humanoid.Sit = false end
+        myRoot.CFrame = myRoot.CFrame * CFrame.Angles(0, 0, 0)
+        pcall(function()
+            local shoulder = char:FindFirstChild("Right Shoulder", true) or char:FindFirstChild("RightShoulder", true)
+            if shoulder then
+                shoulder.C0 = shoulder.C0 * CFrame.Angles(math.rad(math.sin(tick() * speed) * 50), 0, 0)
+            end
+        end)
     end
 end)
 
