@@ -1,5 +1,5 @@
 -- ==========================================
--- TsunDe1e Gui - Free Slap Edition (No Target Needed)
+-- TsunDe1e Gui - Good boy. Edition
 -- ==========================================
 
 local Players = game:GetService("Players")
@@ -79,8 +79,8 @@ end)
 -------------------------------------------------
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.new(0, 300, 0, 470)
-MainFrame.Position = UDim2.new(0.5, -150, 0.5, -235)
+MainFrame.Size = UDim2.new(0, 300, 0, 500)
+MainFrame.Position = UDim2.new(0.5, -150, 0.5, -250)
 MainFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 MainFrame.BorderSizePixel = 0
 MainFrame.Visible = false
@@ -314,10 +314,27 @@ MehStroke.Color = Color3.fromRGB(0, 255, 255)
 MehStroke.Thickness = 1
 MehStroke.Parent = MehBtn
 
+local GoodBoyBtn = Instance.new("TextButton")
+GoodBoyBtn.Size = UDim2.new(0.9, 0, 0, 26)
+GoodBoyBtn.Position = UDim2.new(0.05, 0, 0, 325)
+GoodBoyBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+GoodBoyBtn.BorderSizePixel = 0
+GoodBoyBtn.Text = "Good boy.: OFF"
+GoodBoyBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+GoodBoyBtn.TextSize = 12
+GoodBoyBtn.Font = Enum.Font.SourceSansBold
+GoodBoyBtn.Parent = MainFrame
+
+local GoodBoyStroke = Instance.new("UIStroke")
+GoodBoyStroke.Color = Color3.fromRGB(0, 255, 255)
+GoodBoyStroke.Thickness = 1
+GoodBoyStroke.Parent = GoodBoyBtn
+
 local bangMode = false
 local sitBangMode = false
 local headShotMode = false
 local mehMode = false
+local goodBoyMode = false
 local storedShoulderC0 = nil
 
 local function resetArm()
@@ -336,7 +353,6 @@ end
 RunService.Stepped:Connect(function()
     local char = LocalPlayer.Character
     if not char or not char:FindFirstChild("HumanoidRootPart") then return end
-    local myRoot = char.HumanoidRootPart
     local humanoid = char:FindFirstChildOfClass("Humanoid")
     
     local rawSpeed = tonumber(SpeedBox.Text) or 25
@@ -345,29 +361,37 @@ RunService.Stepped:Connect(function()
     if bangMode and selectedTarget and selectedTarget.Character and selectedTarget.Character:FindFirstChild("HumanoidRootPart") then
         local targetRoot = selectedTarget.Character.HumanoidRootPart
         if humanoid then humanoid.Sit = false end
-        myRoot.CFrame = targetRoot.CFrame * CFrame.new(0, 0, 1.2 + math.sin(tick() * speed) * 0.8)
+        char.HumanoidRootPart.CFrame = targetRoot.CFrame * CFrame.new(0, 0, 1.2 + math.sin(tick() * speed) * 0.8)
     elseif sitBangMode and selectedTarget and selectedTarget.Character and selectedTarget.Character:FindFirstChild("HumanoidRootPart") then
         local targetRoot = selectedTarget.Character.HumanoidRootPart
         if humanoid then humanoid.Sit = true end
-        myRoot.CFrame = targetRoot.CFrame * CFrame.new(0, -0.5, -1 + math.sin(tick() * speed) * 0.8) * CFrame.Angles(math.rad(90), 0, 0)
+        char.HumanoidRootPart.CFrame = targetRoot.CFrame * CFrame.new(0, -0.5, -1 + math.sin(tick() * speed) * 0.8) * CFrame.Angles(math.rad(90), 0, 0)
     elseif headShotMode then
-        -- ตบอากาศ/ตบ NPC ได้ทันทีโดยไม่ต้องเลือกเป้าหมาย
         if humanoid then humanoid.Sit = false end
         pcall(function()
             local shoulder = char:FindFirstChild("Right Shoulder", true) or char:FindFirstChild("RightShoulder", true)
             if shoulder then
                 if not storedShoulderC0 then storedShoulderC0 = shoulder.C0 end
-                shoulder.C0 = CFrame.new(1, 0.5, 0) * CFrame.Angles(math.rad(120 + math.sin(tick() * speed) * 40), 0, 0)
+                shoulder.C0 = CFrame.new(1, 0.5, 0) * CFrame.Angles(math.rad(100 + math.sin(tick() * speed) * 35), math.rad(10), 0)
             end
         end)
     elseif mehMode then
-        -- ตบไหล่อากาศ/ตบ NPC ได้ทันทีโดยไม่ต้องเลือกเป้าหมาย
         if humanoid then humanoid.Sit = false end
         pcall(function()
             local shoulder = char:FindFirstChild("Right Shoulder", true) or char:FindFirstChild("RightShoulder", true)
             if shoulder then
                 if not storedShoulderC0 then storedShoulderC0 = shoulder.C0 end
-                shoulder.C0 = CFrame.new(1, 0.5, 0) * CFrame.Angles(math.rad(70), 0, math.rad(math.sin(tick() * speed) * 45))
+                shoulder.C0 = CFrame.new(1, 0.5, 0) * CFrame.Angles(math.rad(75), 0, math.rad(math.sin(tick() * speed) * 40))
+            end
+        end)
+    elseif goodBoyMode then
+        -- ท่า Good boy.: ยื่นมือออกไปด้านหน้า ยกลอยอยู่ในระดับเหนือศีรษะคนอื่น แล้วขยับลูบขึ้นลงเบาๆ
+        if humanoid then humanoid.Sit = false end
+        pcall(function()
+            local shoulder = char:FindFirstChild("Right Shoulder", true) or char:FindFirstChild("RightShoulder", true)
+            if shoulder then
+                if not storedShoulderC0 then storedShoulderC0 = shoulder.C0 end
+                shoulder.C0 = CFrame.new(1, 0.9, -0.8) * CFrame.Angles(math.rad(90), math.rad(0), math.rad(math.sin(tick() * speed) * 20))
             end
         end)
     end
@@ -376,111 +400,114 @@ end)
 BangBtn.MouseButton1Click:Connect(function()
     if not selectedTarget then return end
     bangMode = not bangMode
-    sitBangMode = false
-    headShotMode = false
-    mehMode = false
+    sitBangMode, headShotMode, mehMode, goodBoyMode = false, false, false, false
     resetArm()
     SitBangBtn.Text = "Sit/Floor Bang Target: OFF"
     SitBangBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
-    SitBangBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
     HeadShotBtn.Text = "Head shot!: OFF"
     HeadShotBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
-    HeadShotBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
     MehBtn.Text = "meh: OFF"
     MehBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
-    MehBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+    GoodBoyBtn.Text = "Good boy.: OFF"
+    GoodBoyBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
     
     if bangMode then
         BangBtn.Text = "Bang Target: ON"
         BangBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 255)
-        BangBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     else
         BangBtn.Text = "Bang Target: OFF"
         BangBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
-        BangBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
     end
 end)
 
 SitBangBtn.MouseButton1Click:Connect(function()
     if not selectedTarget then return end
     sitBangMode = not sitBangMode
-    bangMode = false
-    headShotMode = false
-    mehMode = false
+    bangMode, headShotMode, mehMode, goodBoyMode = false, false, false, false
     resetArm()
     BangBtn.Text = "Bang Target: OFF"
     BangBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
-    BangBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
     HeadShotBtn.Text = "Head shot!: OFF"
     HeadShotBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
-    HeadShotBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
     MehBtn.Text = "meh: OFF"
     MehBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
-    MehBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+    GoodBoyBtn.Text = "Good boy.: OFF"
+    GoodBoyBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
     
     if sitBangMode then
         SitBangBtn.Text = "Sit/Floor Bang Target: ON"
         SitBangBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 255)
-        SitBangBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     else
         SitBangBtn.Text = "Sit/Floor Bang Target: OFF"
         SitBangBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
-        SitBangBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
     end
 end)
 
 HeadShotBtn.MouseButton1Click:Connect(function()
     headShotMode = not headShotMode
-    bangMode = false
-    sitBangMode = false
-    mehMode = false
+    bangMode, sitBangMode, mehMode, goodBoyMode = false, false, false, false
     resetArm()
     BangBtn.Text = "Bang Target: OFF"
     BangBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
-    BangBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
     SitBangBtn.Text = "Sit/Floor Bang Target: OFF"
     SitBangBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
-    SitBangBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
     MehBtn.Text = "meh: OFF"
     MehBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
-    MehBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+    GoodBoyBtn.Text = "Good boy.: OFF"
+    GoodBoyBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
     
     if headShotMode then
         HeadShotBtn.Text = "Head shot!: ON"
         HeadShotBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 255)
-        HeadShotBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     else
         HeadShotBtn.Text = "Head shot!: OFF"
         HeadShotBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
-        HeadShotBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
         resetArm()
     end
 end)
 
 MehBtn.MouseButton1Click:Connect(function()
     mehMode = not mehMode
-    bangMode = false
-    sitBangMode = false
-    headShotMode = false
+    bangMode, sitBangMode, headShotMode, goodBoyMode = false, false, false, false
     resetArm()
     BangBtn.Text = "Bang Target: OFF"
     BangBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
-    BangBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
     SitBangBtn.Text = "Sit/Floor Bang Target: OFF"
     SitBangBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
-    SitBangBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
     HeadShotBtn.Text = "Head shot!: OFF"
     HeadShotBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
-    HeadShotBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+    GoodBoyBtn.Text = "Good boy.: OFF"
+    GoodBoyBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
     
     if mehMode then
         MehBtn.Text = "meh: ON"
         MehBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 255)
-        MehBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     else
         MehBtn.Text = "meh: OFF"
         MehBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
-        MehBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+        resetArm()
+    end
+end)
+
+GoodBoyBtn.MouseButton1Click:Connect(function()
+    goodBoyMode = not goodBoyMode
+    bangMode, sitBangMode, headShotMode, mehMode = false, false, false, false
+    resetArm()
+    BangBtn.Text = "Bang Target: OFF"
+    BangBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+    SitBangBtn.Text = "Sit/Floor Bang Target: OFF"
+    SitBangBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+    HeadShotBtn.Text = "Head shot!: OFF"
+    HeadShotBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+    MehBtn.Text = "meh: OFF"
+    MehBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+    
+    if goodBoyMode then
+        GoodBoyBtn.Text = "Good boy.: ON"
+        GoodBoyBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 255)
+    else
+        GoodBoyBtn.Text = "Good boy.: OFF"
+        GoodBoyBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
         resetArm()
     end
 end)
