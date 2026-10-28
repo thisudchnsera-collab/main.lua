@@ -1,5 +1,5 @@
 -- ==========================================
--- TsunDe1e Gui - Real Jerk off Edition (Right Hand)
+-- TsunDe1e Gui - Final Fix (Thin Icon Text)
 -- ==========================================
 
 local Players = game:GetService("Players")
@@ -15,7 +15,7 @@ ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
 
 -------------------------------------------------
--- 1. Mini Floating Icon
+-- 1. Mini Floating Icon (เอา UIStroke ออกจากตัวอักษรแล้ว เหลือแค่ตัวหนังสือบางๆ คลีนๆ)
 -------------------------------------------------
 local MiniIcon = Instance.new("TextButton")
 MiniIcon.Name = "TsunDe1eMiniIcon"
@@ -31,6 +31,7 @@ MiniIcon.Active = true
 MiniIcon.Draggable = true
 MiniIcon.Parent = ScreenGui
 
+-- กรอบสี่เหลี่ยมรอบปุ่ม (ตัวนี้ไว้เปลี่ยนสีตอนล็อกตำแหน่ง)
 local IconStroke = Instance.new("UIStroke")
 IconStroke.Color = Color3.fromRGB(0, 255, 255)
 IconStroke.Thickness = 1.5
@@ -161,7 +162,7 @@ NoclipBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- Fling Button
+-- Pro Fling Button (ดีดคนอื่นปลิว เรายืนสวยๆ นิ่งๆ)
 local FlingBtn = Instance.new("TextButton")
 FlingBtn.Size = UDim2.new(0.9, 0, 0, 26)
 FlingBtn.Position = UDim2.new(0.05, 0, 0, 75)
@@ -189,9 +190,15 @@ FlingBtn.MouseButton1Click:Connect(function()
             if char and char:FindFirstChild("HumanoidRootPart") then
                 local root = char.HumanoidRootPart
                 local vel = root.Velocity
-                root.Velocity = vel * 100 + Vector3.new(0, 50000, 0)
-                RunService.RenderStepped:Wait()
-                root.Velocity = vel
+                root.Velocity = Vector3.new(vel.X, 0, vel.Z) + Vector3.new(0, 30000, 0)
+                local bav = root:FindFirstChild("TsunDe1eFlingVelocity")
+                if not bav then
+                    bav = Instance.new("BodyAngularVelocity")
+                    bav.Name = "TsunDe1eFlingVelocity"
+                    bav.MaxTorque = Vector3.new(math.huge, math.huge, math.huge)
+                    bav.AngularVelocity = Vector3.new(0, 5000, 0)
+                    bav.Parent = root
+                end
             end
         end)
     else
@@ -199,6 +206,11 @@ FlingBtn.MouseButton1Click:Connect(function()
         FlingBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
         FlingBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
         if flingConnection then flingConnection:Disconnect() end
+        local char = LocalPlayer.Character
+        if char and char:FindFirstChild("HumanoidRootPart") then
+            local bav = char.HumanoidRootPart:FindFirstChild("TsunDe1eFlingVelocity")
+            if bav then bav:Destroy() end
+        end
     end
 end)
 
@@ -350,7 +362,6 @@ RunService.Stepped:Connect(function()
     if not char or not char:FindFirstChild("HumanoidRootPart") then return end
     local myRoot = char.HumanoidRootPart
     local humanoid = char:FindFirstChildOfClass("Humanoid")
-    local rightArm = char:FindFirstChild("Right Arm") or char:FindFirstChild("RightLowerArm")
     
     local rawSpeed = tonumber(SpeedBox.Text) or 25
     local speed = math.clamp(rawSpeed, 1, 150)
@@ -363,13 +374,11 @@ RunService.Stepped:Connect(function()
         if humanoid then humanoid.Sit = true end
         myRoot.CFrame = targetRoot.CFrame * CFrame.new(0, -0.5, -1 + math.sin(tick() * speed) * 0.8) * CFrame.Angles(math.rad(90), 0, 0)
     elseif jerkMode then
-        -- ยืนตรงแล้วขยับมือขวาชักรัวๆ ตรงเป้าตัวเอง
         if humanoid then humanoid.Sit = false end
-        myRoot.CFrame = myRoot.CFrame * CFrame.Angles(0, 0, 0)
         pcall(function()
             local shoulder = char:FindFirstChild("Right Shoulder", true) or char:FindFirstChild("RightShoulder", true)
             if shoulder then
-                shoulder.C0 = shoulder.C0 * CFrame.Angles(math.rad(math.sin(tick() * speed) * 50), 0, 0)
+                shoulder.C0 = CFrame.new(1, 0.5, 0) * CFrame.Angles(math.rad(90 + math.sin(tick() * speed) * 40), math.rad(15), 0)
             end
         end)
     end
