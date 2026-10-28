@@ -1,5 +1,5 @@
 -- ==========================================
--- TsunDe1e Gui - Hmph! Edition (Classic Font)
+-- TsunDe1e Gui - Hmph! Edition (Clean Normal Font)
 -- ==========================================
 
 local Players = game:GetService("Players")
@@ -8,7 +8,6 @@ local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
 
 local ASSET_IMAGE = "rbxassetid://105816152070321"
-local SOUND_ID = "8344420739"
 
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "TsunDe1eGuiSystem"
@@ -16,7 +15,7 @@ ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
 
 -------------------------------------------------
--- 1. Mini Floating Icon (ทรงสี่เหลี่ยมมุมแหลม กรอบ Cyan ฟอนต์ดั้งเดิมปกติ)
+-- 1. Mini Floating Icon (ทรงสี่เหลี่ยม กรอบ Cyan ข้อความบางปกติ)
 -------------------------------------------------
 local MiniIcon = Instance.new("TextButton")
 MiniIcon.Name = "TsunDe1eMiniIcon"
@@ -26,15 +25,15 @@ MiniIcon.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
 MiniIcon.BorderSizePixel = 0
 MiniIcon.Text = "Hmph!"
 MiniIcon.TextColor3 = Color3.fromRGB(0, 255, 255)
-MiniIcon.TextSize = 15
-MiniIcon.Font = Enum.Font.SourceSans -- ฟอนต์ดั้งเดิม ความหนาปกติ
+MiniIcon.TextSize = 14
+MiniIcon.Font = Enum.Font.SourceSans -- ฟอนต์ดั้งเดิม ความหนาปกติ ไม่หนาเตอะ
 MiniIcon.Active = true
 MiniIcon.Draggable = true
 MiniIcon.Parent = ScreenGui
 
 local IconStroke = Instance.new("UIStroke")
 IconStroke.Color = Color3.fromRGB(0, 255, 255)
-IconStroke.Thickness = 2
+IconStroke.Thickness = 1.5 -- ปรับความหนาขอบให้บางลงกำลังสวย
 IconStroke.Parent = MiniIcon
 
 local isLocked = false
@@ -76,7 +75,7 @@ MiniIcon.MouseButton1Up:Connect(function()
 end)
 
 -------------------------------------------------
--- 2. Main GUI Frame (พื้นหลังขาว ขอบ Cyan ไม่มีปุ่มปิด)
+-- 2. Main GUI Frame (พื้นหลังขาว ขอบ Cyan)
 -------------------------------------------------
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
@@ -91,10 +90,9 @@ MainFrame.Parent = ScreenGui
 
 local FrameStroke = Instance.new("UIStroke")
 FrameStroke.Color = Color3.fromRGB(0, 255, 255)
-FrameStroke.Thickness = 3
+FrameStroke.Thickness = 2
 FrameStroke.Parent = MainFrame
 
--- Top Bar
 local TopBar = Instance.new("Frame")
 TopBar.Size = UDim2.new(1, 0, 0, 40)
 TopBar.BackgroundColor3 = Color3.fromRGB(0, 200, 200)
@@ -106,8 +104,8 @@ Title.Size = UDim2.new(1, 0, 1, 0)
 Title.BackgroundTransparency = 1
 Title.Text = "TsunDe1e Gui"
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-Title.TextSize = 18
-Title.Font = Enum.Font.GothamBold
+Title.TextSize = 16
+Title.Font = Enum.Font.SourceSansBold
 Title.Parent = TopBar
 
 MiniIcon.MouseButton1Click:Connect(function()
@@ -117,7 +115,7 @@ MiniIcon.MouseButton1Click:Connect(function()
 end)
 
 -------------------------------------------------
--- 3. Noclip & Bang / Sit Bang Functions
+-- 3. Noclip & Bang Functions
 -------------------------------------------------
 local noclipEnabled = false
 local noclipConnection
@@ -129,7 +127,7 @@ NoclipBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
 NoclipBtn.Text = "Toggle Noclip: OFF"
 NoclipBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
 NoclipBtn.TextSize = 13
-NoclipBtn.Font = Enum.Font.GothamBold
+NoclipBtn.Font = Enum.Font.SourceSansBold
 NoclipBtn.Parent = MainFrame
 
 local NoclipStroke = Instance.new("UIStroke")
@@ -159,7 +157,6 @@ NoclipBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- Player List Selection
 local ListLabel = Instance.new("TextLabel")
 ListLabel.Size = UDim2.new(0.9, 0, 0, 20)
 ListLabel.Position = UDim2.new(0.05, 0, 0, 90)
@@ -167,7 +164,7 @@ ListLabel.BackgroundTransparency = 1
 ListLabel.Text = "Select Target Player:"
 ListLabel.TextColor3 = Color3.fromRGB(50, 50, 50)
 ListLabel.TextSize = 12
-ListLabel.Font = Enum.Font.GothamBold
+ListLabel.Font = Enum.Font.SourceSansBold
 ListLabel.TextXAlignment = Enum.TextXAlignment.Left
 ListLabel.Parent = MainFrame
 
@@ -200,7 +197,7 @@ local function updatePlayerList()
             pBtn.Text = "  " .. plr.Name
             pBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
             pBtn.TextSize = 12
-            pBtn.Font = Enum.Font.Gotham
+            pBtn.Font = Enum.Font.SourceSans
             pBtn.TextXAlignment = Enum.TextXAlignment.Left
             pBtn.Parent = ScrollingFrame
             
@@ -220,7 +217,6 @@ Players.PlayerAdded:Connect(updatePlayerList)
 Players.PlayerRemoving:Connect(updatePlayerList)
 updatePlayerList()
 
--- Bang and Sit/Floor Bang Buttons
 local BangBtn = Instance.new("TextButton")
 BangBtn.Size = UDim2.new(0.9, 0, 0, 35)
 BangBtn.Position = UDim2.new(0.05, 0, 0, 235)
@@ -228,7 +224,7 @@ BangBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
 BangBtn.Text = "Bang Target: OFF"
 BangBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
 BangBtn.TextSize = 13
-BangBtn.Font = Enum.Font.GothamBold
+BangBtn.Font = Enum.Font.SourceSansBold
 BangBtn.Parent = MainFrame
 
 local BangStroke = Instance.new("UIStroke")
@@ -243,7 +239,7 @@ SitBangBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
 SitBangBtn.Text = "Sit/Floor Bang Target: OFF"
 SitBangBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
 SitBangBtn.TextSize = 13
-SitBangBtn.Font = Enum.Font.GothamBold
+SitBangBtn.Font = Enum.Font.SourceSansBold
 SitBangBtn.Parent = MainFrame
 
 local SitStroke = Instance.new("UIStroke")
@@ -307,7 +303,7 @@ SitBangBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- Footer (Red text with default source sans font)
+-- Footer
 local Footer = Instance.new("TextLabel")
 Footer.Size = UDim2.new(1, 0, 0, 25)
 Footer.Position = UDim2.new(0, 0, 1, -28)
