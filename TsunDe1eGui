@@ -236,10 +236,11 @@ R6Stroke.Color = Color3.fromRGB(0, 255, 255)
 R6Stroke.Thickness = 1
 R6Stroke.Parent = R6Btn
 
-pcall(function()
-    R6Btn.MouseButton1Click:Connect(function()
+R6Btn.MouseButton1Click:Connect(function()
+    pcall(function()
         local char = LocalPlayer.Character
         if char and char:FindFirstChild("Humanoid") then
+            -- เปลี่ยนลิงก์ข้างล่างนี้ให้ชี้ไปยังไฟล์ R6 Converter ของนายเองได้เลย (ถ้ามี)
             local r6Script = game:HttpGet("https://raw.githubusercontent.com/ocif/R6-Converter/main/script.lua", true)
             if r6Script then
                 loadstring(r6Script)()
