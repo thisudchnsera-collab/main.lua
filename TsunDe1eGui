@@ -1,5 +1,5 @@
 -- ==========================================
--- TsunDe1e Gui - Perfect Quadruped Pose Edition
+-- TsunDe1e Gui - Ride & Quadruped Edition
 -- ==========================================
 
 local Players = game:GetService("Players")
@@ -15,7 +15,7 @@ ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
 
 -------------------------------------------------
--- 1. Mini Floating Icon
+-- 1. Mini Floating Icon (ฟอนต์ปกติ เส้นบาง)
 -------------------------------------------------
 local MiniIcon = Instance.new("TextButton")
 MiniIcon.Name = "TsunDe1eMiniIcon"
@@ -79,8 +79,8 @@ end)
 -------------------------------------------------
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.new(0, 320, 0, 480)
-MainFrame.Position = UDim2.new(0.5, -160, 0.5, -240)
+MainFrame.Size = UDim2.new(0, 320, 0, 520)
+MainFrame.Position = UDim2.new(0.5, -160, 0.5, -260)
 MainFrame.BackgroundColor3 = Color3.fromRGB(245, 245, 245)
 MainFrame.BorderSizePixel = 0
 MainFrame.Visible = false
@@ -117,11 +117,11 @@ end)
 
 -- ช่องรวมฟังก์ชันต่างๆ (Function Panel)
 local FunctionPanel = Instance.new("ScrollingFrame")
-FunctionPanel.Size = UDim2.new(0.92, 0, 0, 390)
+FunctionPanel.Size = UDim2.new(0.92, 0, 0, 430)
 FunctionPanel.Position = UDim2.new(0.04, 0, 0, 50)
 FunctionPanel.BackgroundTransparency = 1
 FunctionPanel.BorderSizePixel = 0
-FunctionPanel.CanvasSize = UDim2.new(0, 0, 0, 440)
+FunctionPanel.CanvasSize = UDim2.new(0, 0, 0, 480)
 FunctionPanel.ScrollBarThickness = 4
 FunctionPanel.Parent = MainFrame
 
@@ -265,7 +265,7 @@ Players.PlayerAdded:Connect(updatePlayerList)
 Players.PlayerRemoving:Connect(updatePlayerList)
 updatePlayerList()
 
--- Action Buttons (Bang, Sit/Floor Bang, Suck dick p/r)
+-- Action Buttons (Bang, Sit/Floor Bang, Suck dick p/r, Sit p/r)
 local BangBtn = Instance.new("TextButton")
 BangBtn.Size = UDim2.new(1, 0, 0, 30)
 BangBtn.Position = UDim2.new(0, 0, 0, 200)
@@ -314,9 +314,26 @@ SuckStroke.Color = Color3.fromRGB(0, 255, 255)
 SuckStroke.Thickness = 1
 SuckStroke.Parent = SuckBtn
 
+local SitPrBtn = Instance.new("TextButton")
+SitPrBtn.Size = UDim2.new(1, 0, 0, 30)
+SitPrBtn.Position = UDim2.new(0, 0, 0, 320)
+SitPrBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+SitPrBtn.BorderSizePixel = 0
+SitPrBtn.Text = "Sit p/r: OFF"
+SitPrBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+SitPrBtn.TextSize = 12
+SitPrBtn.Font = Enum.Font.SourceSansBold
+SitPrBtn.Parent = FunctionPanel
+
+local SitPrStroke = Instance.new("UIStroke")
+SitPrStroke.Color = Color3.fromRGB(0, 255, 255)
+SitPrStroke.Thickness = 1
+SitPrStroke.Parent = SitPrBtn
+
 local bangMode = false
 local sitBangMode = false
 local suckMode = false
+local sitPrMode = false
 
 RunService.Stepped:Connect(function()
     local char = LocalPlayer.Character
@@ -334,13 +351,18 @@ RunService.Stepped:Connect(function()
     elseif sitBangMode and selectedTarget and selectedTarget.Character and selectedTarget.Character:FindFirstChild("HumanoidRootPart") then
         local targetRoot = selectedTarget.Character.HumanoidRootPart
         if humanoid then humanoid.Sit = true end
-        -- ท่าตามรูปสเก็ตช์: หันหน้าคว่ำลงพื้น (Pitch 90 องศา), นั่งสี่ขา (ขายันพื้น มือยันพื้น), สะโพกชนเป้าหมาย และขยับเข้าออกนุ่มๆ ไม่สั่นรัว
-        myRoot.CFrame = targetRoot.CFrame * CFrame.new(0, -0.8, -1.2 + math.sin(tick() * (speed * 0.4)) * 0.25) * CFrame.Angles(math.rad(90), 0, 0)
+        -- ท่านอนคว่ำราบมือเท้าติดพื้น สะโพกชนเป้าหมาย ขยับเข้าออกนุ่มนวล
+        myRoot.CFrame = targetRoot.CFrame * CFrame.new(0, -0.4, -1.0 + math.sin(tick() * (speed * 0.4)) * 0.25) * CFrame.Angles(math.rad(90), 0, 0)
     elseif suckMode and selectedTarget and selectedTarget.Character and selectedTarget.Character:FindFirstChild("HumanoidRootPart") then
         local targetRoot = selectedTarget.Character.HumanoidRootPart
         if humanoid then humanoid.Sit = true end
         -- ท่า Suck dick p/r: นิ่งๆ นุ่มๆ ไม่สั่นกระตุก
         myRoot.CFrame = targetRoot.CFrame * CFrame.new(0, -1.5, -0.6 + math.sin(tick() * (speed * 0.4)) * 0.1) * CFrame.Angles(0, math.rad(180), 0)
+    elseif sitPrMode and selectedTarget and selectedTarget.Character and selectedTarget.Character:FindFirstChild("HumanoidRootPart") then
+        local targetRoot = selectedTarget.Character.HumanoidRootPart
+        if humanoid then humanoid.Sit = true end
+        -- ฟังก์ชันขี่คอ (Sit p/r): นั่งอยู่บนหัว/คอเป้าหมายพอดี
+        myRoot.CFrame = targetRoot.CFrame * CFrame.new(0, 2.5, 0)
     end
 end)
 
@@ -349,10 +371,13 @@ BangBtn.MouseButton1Click:Connect(function()
     bangMode = not bangMode
     sitBangMode = false
     suckMode = false
+    sitPrMode = false
     SitBangBtn.Text = "Sit/Floor Bang Target: OFF"
     SitBangBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     SuckBtn.Text = "Suck dick p/r: OFF"
     SuckBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    SitPrBtn.Text = "Sit p/r: OFF"
+    SitPrBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     
     if bangMode then
         BangBtn.Text = "Bang Target: ON"
@@ -368,10 +393,13 @@ SitBangBtn.MouseButton1Click:Connect(function()
     sitBangMode = not sitBangMode
     bangMode = false
     suckMode = false
+    sitPrMode = false
     BangBtn.Text = "Bang Target: OFF"
     BangBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     SuckBtn.Text = "Suck dick p/r: OFF"
     SuckBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    SitPrBtn.Text = "Sit p/r: OFF"
+    SitPrBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     
     if sitBangMode then
         SitBangBtn.Text = "Sit/Floor Bang Target: ON"
@@ -387,10 +415,13 @@ SuckBtn.MouseButton1Click:Connect(function()
     suckMode = not suckMode
     bangMode = false
     sitBangMode = false
+    sitPrMode = false
     BangBtn.Text = "Bang Target: OFF"
     BangBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     SitBangBtn.Text = "Sit/Floor Bang Target: OFF"
     SitBangBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    SitPrBtn.Text = "Sit p/r: OFF"
+    SitPrBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     
     if suckMode then
         SuckBtn.Text = "Suck dick p/r: ON"
@@ -401,10 +432,32 @@ SuckBtn.MouseButton1Click:Connect(function()
     end
 end)
 
+SitPrBtn.MouseButton1Click:Connect(function()
+    if not selectedTarget then return end
+    sitPrMode = not sitPrMode
+    bangMode = false
+    sitBangMode = false
+    suckMode = false
+    BangBtn.Text = "Bang Target: OFF"
+    BangBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    SitBangBtn.Text = "Sit/Floor Bang Target: OFF"
+    SitBangBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    SuckBtn.Text = "Suck dick p/r: OFF"
+    SuckBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    
+     if sitPrMode then
+        SitPrBtn.Text = "Sit p/r: ON"
+        SitPrBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 255)
+    else
+        SitPrBtn.Text = "Sit p/r: OFF"
+        SitPrBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    end
+end)
+
 -- Footer Signature inside panel
 local Footer = Instance.new("TextLabel")
 Footer.Size = UDim2.new(1, 0, 0, 20)
-Footer.Position = UDim2.new(0, 0, 0, 325)
+Footer.Position = UDim2.new(0, 0, 0, 365)
 Footer.BackgroundTransparency = 1
 Footer.Text = "I'm GAY"
 Footer.TextColor3 = Color3.fromRGB(255, 0, 0)
