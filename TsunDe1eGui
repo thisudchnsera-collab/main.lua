@@ -1,11 +1,19 @@
 -- TsunDe1e Gui (R6 Character Animations & Trolling Panel)
--- Font Style: SourceSans (Clean & Minimalist) - Compact Version
+-- Theme: White Background, Thin Cyan Border (Sharp Edges), Black Buttons
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
 local LocalPlayer = Players.LocalPlayer
 local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
 local HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
+local Humanoid = Character:WaitForChild("Humanoid")
+
+-- Target System & Noclip Variables
+local targetName = ""
+local selectedTarget = nil
+local isShiftLockActive = false
+local isNoclipActive = false
 
 -- GUI Creation
 local ScreenGui = Instance.new("ScreenGui")
@@ -13,11 +21,11 @@ ScreenGui.Name = "TsunDe1eGui"
 ScreenGui.Parent = game:GetService("CoreGui")
 ScreenGui.ResetOnSpawn = false
 
--- Floating Toggle Icon
+-- Floating Toggle Icon (Black button, Cyan Border)
 local ToggleButton = Instance.new("TextButton")
 ToggleButton.Name = "ToggleButton"
 ToggleButton.Parent = ScreenGui
-ToggleButton.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+ToggleButton.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
 ToggleButton.Position = UDim2.new(0.05, 0, 0.1, 0)
 ToggleButton.Size = UDim2.new(0, 40, 0, 40)
 ToggleButton.Font = Enum.Font.SourceSans
@@ -27,33 +35,43 @@ ToggleButton.TextSize = 15
 ToggleButton.Draggable = true
 ToggleButton.Active = true
 
-local UICorner = Instance.new("UICorner")
-UICorner.CornerRadius = UDim.new(0, 6)
-UICorner.Parent = ToggleButton
+local toggleCorner = Instance.new("UICorner")
+toggleCorner.CornerRadius = UDim.new(0, 2)
+toggleCorner.Parent = ToggleButton
 
--- Main Panel (Made shorter & compact)
+local toggleStroke = Instance.new("UIStroke")
+toggleStroke.Color = Color3.fromRGB(0, 255, 255) -- Cyan
+toggleStroke.Thickness = 1.5
+toggleStroke.Parent = ToggleButton
+
+-- Main Panel (White Background, Thin Cyan Border, Sharp Style)
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
 MainFrame.Parent = ScreenGui
-MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+MainFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255) -- White Background
 MainFrame.Position = UDim2.new(0.15, 0, 0.1, 0)
-MainFrame.Size = UDim2.new(0, 200, 0, 220)
+MainFrame.Size = UDim2.new(0, 210, 0, 360)
 MainFrame.Visible = false
 MainFrame.Draggable = true
 MainFrame.Active = true
 
-local MainCorner = Instance.new("UICorner")
-MainCorner.CornerRadius = UDim.new(0, 8)
-MainCorner.Parent = MainFrame
+local mainCorner = Instance.new("UICorner")
+mainCorner.CornerRadius = UDim.new(0, 3) -- เน้นเหลี่ยม
+mainCorner.Parent = MainFrame
 
--- Title
+local mainStroke = Instance.new("UIStroke")
+mainStroke.Color = Color3.fromRGB(0, 255, 255) -- Cyan Border
+mainStroke.Thickness = 1.5 -- กรอบบางๆ
+mainStroke.Parent = MainFrame
+
+-- Title (Cyan/Dark text for white bg)
 local TitleLabel = Instance.new("TextLabel")
 TitleLabel.Parent = MainFrame
 TitleLabel.BackgroundTransparency = 1
 TitleLabel.Size = UDim2.new(1, 0, 0, 28)
 TitleLabel.Font = Enum.Font.SourceSans
 TitleLabel.Text = "TsunDe1e Gui"
-TitleLabel.TextColor3 = Color3.fromRGB(255, 105, 180)
+TitleLabel.TextColor3 = Color3.fromRGB(0, 180, 180)
 TitleLabel.TextSize = 16
 
 -- Toggle GUI Visibility
@@ -61,64 +79,163 @@ ToggleButton.MouseButton1Click:Connect(function()
     MainFrame.Visible = not MainFrame.Visible
 end)
 
--- Helper function for compact button styling
+-- Helper function for styling buttons (Black buttons, white text, sharp edges)
 local function styleButton(btn)
-    btn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+    btn.BackgroundColor3 = Color3.fromRGB(15, 15, 15) -- Black Button
     btn.Font = Enum.Font.SourceSans
     btn.TextColor3 = Color3.fromRGB(255, 255, 255)
     btn.TextSize = 13
     local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, 5)
+    corner.CornerRadius = UDim.new(0, 3) -- เหลี่ยมๆ
     corner.Parent = btn
+    
+    local stroke = Instance.new("UIStroke")
+    stroke.Color = Color3.fromRGB(0, 255, 255) -- Cyan stroke option if wanted, or leave clean
+    stroke.Thickness = 1
+    stroke.Transparency = 0.5
+    stroke.Parent = btn
 end
+
+-- Target Username Input Box (p/r system)
+local targetBox = Instance.new("TextBox")
+targetBox.Parent = MainFrame
+targetBox.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+targetBox.Position = UDim2.new(0.1, 0, 0.10, 0)
+targetBox.Size = UDim2.new(0, 168, 0, 28)
+targetBox.Font = Enum.Font.SourceSans
+targetBox.PlaceholderText = "Enter target name (p/r)..."
+targetBox.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
+targetBox.Text = ""
+targetBox.TextColor3 = Color3.fromRGB(0, 0, 0)
+targetBox.TextSize = 12
+
+local boxCorner = Instance.new("UICorner")
+boxCorner.CornerRadius = UDim.new(0, 3)
+boxCorner.Parent = targetBox
+
+local boxStroke = Instance.new("UIStroke")
+boxStroke.Color = Color3.fromRGB(0, 255, 255)
+boxStroke.Thickness = 1
+boxStroke.Parent = targetBox
+
+targetBox.FocusLost:Connect(function(enterPressed)
+    if enterPressed then
+        targetName = targetBox.Text
+        selectedTarget = nil
+        for _, p in ipairs(Players:GetPlayers()) do
+            if p ~= LocalPlayer and (p.Name:lower():sub(1, #targetName) == targetName:lower() or p.DisplayName:lower():sub(1, #targetName) == targetName:lower()) then
+                selectedTarget = p
+                print("Target locked: " .. p.Name)
+                break
+            end
+        end
+    end
+end)
 
 -- 1. Sit/Floor Bang (Prone pose)
 local isFloorBangActive = false
 local floorBangButton = Instance.new("TextButton")
 floorBangButton.Parent = MainFrame
-floorBangButton.Position = UDim2.new(0.1, 0, 0.18, 0)
-floorBangButton.Size = UDim2.new(0, 160, 0, 28)
+floorBangButton.Position = UDim2.new(0.1, 0, 0.22, 0)
+floorBangButton.Size = UDim2.new(0, 168, 0, 28)
 floorBangButton.Text = "Sit/Floor Bang (Prone)"
 styleButton(floorBangButton)
 
 floorBangButton.MouseButton1Click:Connect(function()
     isFloorBangActive = not isFloorBangActive
-    floorBangButton.BackgroundColor3 = isFloorBangActive and Color3.fromRGB(180, 50, 100) or Color3.fromRGB(45, 45, 45)
+    floorBangButton.BackgroundColor3 = isFloorBangActive and Color3.fromRGB(0, 180, 180) or Color3.fromRGB(15, 15, 15)
 end)
 
--- 2. Sit p/r (Head Ride)
+-- 2. Sit p/r (Head Ride - ขี่คอ)
 local isSitPRActive = false
 local sitPRButton = Instance.new("TextButton")
 sitPRButton.Parent = MainFrame
-sitPRButton.Position = UDim2.new(0.1, 0, 0.38, 0)
-sitPRButton.Size = UDim2.new(0, 160, 0, 28)
+sitPRButton.Position = UDim2.new(0.1, 0, 0.34, 0)
+sitPRButton.Size = UDim2.new(0, 168, 0, 28)
 sitPRButton.Text = "Sit p/r (Head Ride)"
 styleButton(sitPRButton)
 
 sitPRButton.MouseButton1Click:Connect(function()
     isSitPRActive = not isSitPRActive
-    sitPRButton.BackgroundColor3 = isSitPRActive and Color3.fromRGB(180, 50, 100) or Color3.fromRGB(45, 45, 45)
+    sitPRButton.BackgroundColor3 = isSitPRActive and Color3.fromRGB(0, 180, 180) or Color3.fromRGB(15, 15, 15)
 end)
 
 -- 3. Suck dick p/r
 local isSuckActive = false
 local suckButton = Instance.new("TextButton")
 suckButton.Parent = MainFrame
-suckButton.Position = UDim2.new(0.1, 0, 0.58, 0)
-suckButton.Size = UDim2.new(0, 160, 0, 28)
+suckButton.Position = UDim2.new(0.1, 0, 0.46, 0)
+suckButton.Size = UDim2.new(0, 168, 0, 28)
 suckButton.Text = "Suck dick p/r"
 styleButton(suckButton)
 
 suckButton.MouseButton1Click:Connect(function()
     isSuckActive = not isSuckActive
-    suckButton.BackgroundColor3 = isSuckActive and Color3.fromRGB(180, 50, 100) or Color3.fromRGB(45, 45, 45)
+    suckButton.BackgroundColor3 = isSuckActive and Color3.fromRGB(0, 180, 180) or Color3.fromRGB(15, 15, 15)
 end)
 
--- RunService loop
+-- 4. ShiFt LOcK Button
+local shiftLockButton = Instance.new("TextButton")
+shiftLockButton.Parent = MainFrame
+shiftLockButton.Position = UDim2.new(0.1, 0, 0.58, 0)
+shiftLockButton.Size = UDim2.new(0, 168, 0, 28)
+shiftLockButton.Text = "ShiFt LOcK"
+styleButton(shiftLockButton)
+
+shiftLockButton.MouseButton1Click:Connect(function()
+    isShiftLockActive = not isShiftLockActive
+    shiftLockButton.BackgroundColor3 = isShiftLockActive and Color3.fromRGB(0, 180, 180) or Color3.fromRGB(15, 15, 15)
+end)
+
+-- 5. Noclip Button (ทะลุกำแพง)
+local noclipButton = Instance.new("TextButton")
+noclipButton.Parent = MainFrame
+noclipButton.Position = UDim2.new(0.1, 0, 0.70, 0)
+noclipButton.Size = UDim2.new(0, 168, 0, 28)
+noclipButton.Text = "Noclip (ทะลุกำแพง)"
+styleButton(noclipButton)
+
+noclipButton.MouseButton1Click:Connect(function()
+    isNoclipActive = not isNoclipActive
+    noclipButton.BackgroundColor3 = isNoclipActive and Color3.fromRGB(0, 180, 180) or Color3.fromRGB(15, 15, 15)
+end)
+
+-- Noclip Loop
+RunService.Stepped:Connect(function()
+    if isNoclipActive and Character then
+        for _, part in ipairs(Character:GetDescendants()) do
+            if part:IsA("BasePart") then
+                part.CanCollide = false
+            end
+        end
+    end
+end)
+
+-- Shift Lock Loop
+RunService.RenderStepped:Connect(function()
+    if Humanoid then
+        if isShiftLockActive then
+            Humanoid.AutoRotate = false
+            local cameraCFrame = workspace.CurrentCamera.CFrame
+            HumanoidRootPart.CFrame = CFrame.new(HumanoidRootPart.Position, HumanoidRootPart.Position + Vector3.new(cameraCFrame.LookVector.X, 0, cameraCFrame.LookVector.Z))
+        else
+            Humanoid.AutoRotate = true
+        end
+    end
+end)
+
+-- Target Handling Loop
 RunService.Stepped:Connect(function()
     if Character and HumanoidRootPart then
-        if isSitPRActive then
-            -- Head ride logic
+        if selectedTarget and selectedTarget.Character and selectedTarget.Character:FindFirstChild("HumanoidRootPart") then
+            local targetRoot = selectedTarget.Character.HumanoidRootPart
+            if isSitPRActive then
+                -- ขี่คอบนหัวเป้าหมาย
+                HumanoidRootPart.CFrame = targetRoot.CFrame * CFrame.new(0, 3.5, 0)
+            elseif isSuckActive then
+                -- ท่า Suck p/r
+                HumanoidRootPart.CFrame = targetRoot.CFrame * CFrame.new(0, 0, -2) * CFrame.Angles(math.rad(90), 0, 0)
+            end
         end
     end
 end)
