@@ -1,5 +1,5 @@
 -- TsunDe1e Gui (R6 Character Animations & Trolling Panel)
--- Theme: White Background, Thin Cyan Border (Sharp Edges), Black Buttons
+-- Theme: White Background, Thin Cyan Sharp Border, Black Buttons
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -9,11 +9,11 @@ local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
 local HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
 local Humanoid = Character:WaitForChild("Humanoid")
 
--- Target System & Noclip Variables
-local targetName = ""
+-- Target System & State Variables
 local selectedTarget = nil
 local isShiftLockActive = false
 local isNoclipActive = false
+local isDropdownOpen = false
 
 -- GUI Creation
 local ScreenGui = Instance.new("ScreenGui")
@@ -21,30 +21,27 @@ ScreenGui.Name = "TsunDe1eGui"
 ScreenGui.Parent = game:GetService("CoreGui")
 ScreenGui.ResetOnSpawn = false
 
--- Floating Toggle Icon (Black button, Cyan Border)
+-- Floating Toggle Icon (Hmph Style - Sharp Edges)
 local ToggleButton = Instance.new("TextButton")
 ToggleButton.Name = "ToggleButton"
 ToggleButton.Parent = ScreenGui
 ToggleButton.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
 ToggleButton.Position = UDim2.new(0.05, 0, 0.1, 0)
-ToggleButton.Size = UDim2.new(0, 40, 0, 40)
+ToggleButton.Size = UDim2.new(0, 50, 0, 35)
 ToggleButton.Font = Enum.Font.SourceSans
-ToggleButton.Text = "GUI"
+ToggleButton.Text = "Hmph"
 ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-ToggleButton.TextSize = 15
+ToggleButton.TextSize = 14
 ToggleButton.Draggable = true
 ToggleButton.Active = true
 
-local toggleCorner = Instance.new("UICorner")
-toggleCorner.CornerRadius = UDim.new(0, 2)
-toggleCorner.Parent = ToggleButton
-
+-- เหลี่ยมคมกริบ ไร้ความโค้ง
 local toggleStroke = Instance.new("UIStroke")
 toggleStroke.Color = Color3.fromRGB(0, 255, 255) -- Cyan
 toggleStroke.Thickness = 1.5
 toggleStroke.Parent = ToggleButton
 
--- Main Panel (White Background, Thin Cyan Border, Sharp Style)
+-- Main Panel (White Background, Thin Cyan Border, Sharp Rectangular Style)
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
 MainFrame.Parent = ScreenGui
@@ -55,16 +52,13 @@ MainFrame.Visible = false
 MainFrame.Draggable = true
 MainFrame.Active = true
 
-local mainCorner = Instance.new("UICorner")
-mainCorner.CornerRadius = UDim.new(0, 3) -- เน้นเหลี่ยม
-mainCorner.Parent = MainFrame
-
+-- เน้นเหลี่ยม 100% ไม่ใส่ UICorner ให้กรอบหลัก
 local mainStroke = Instance.new("UIStroke")
 mainStroke.Color = Color3.fromRGB(0, 255, 255) -- Cyan Border
 mainStroke.Thickness = 1.5 -- กรอบบางๆ
 mainStroke.Parent = MainFrame
 
--- Title (Cyan/Dark text for white bg)
+-- Title
 local TitleLabel = Instance.new("TextLabel")
 TitleLabel.Parent = MainFrame
 TitleLabel.BackgroundTransparency = 1
@@ -79,56 +73,89 @@ ToggleButton.MouseButton1Click:Connect(function()
     MainFrame.Visible = not MainFrame.Visible
 end)
 
--- Helper function for styling buttons (Black buttons, white text, sharp edges)
+-- Helper function for styling buttons (Black buttons, sharp edges)
 local function styleButton(btn)
-    btn.BackgroundColor3 = Color3.fromRGB(15, 15, 15) -- Black Button
+    btn.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
     btn.Font = Enum.Font.SourceSans
     btn.TextColor3 = Color3.fromRGB(255, 255, 255)
     btn.TextSize = 13
-    local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, 3) -- เหลี่ยมๆ
-    corner.Parent = btn
-    
+    -- ไร้ความโค้ง เน้นเหลี่ยม
     local stroke = Instance.new("UIStroke")
-    stroke.Color = Color3.fromRGB(0, 255, 255) -- Cyan stroke option if wanted, or leave clean
+    stroke.Color = Color3.fromRGB(0, 255, 255)
     stroke.Thickness = 1
     stroke.Transparency = 0.5
     stroke.Parent = btn
 end
 
--- Target Username Input Box (p/r system)
-local targetBox = Instance.new("TextBox")
-targetBox.Parent = MainFrame
-targetBox.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
-targetBox.Position = UDim2.new(0.1, 0, 0.10, 0)
-targetBox.Size = UDim2.new(0, 168, 0, 28)
-targetBox.Font = Enum.Font.SourceSans
-targetBox.PlaceholderText = "Enter target name (p/r)..."
-targetBox.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
-targetBox.Text = ""
-targetBox.TextColor3 = Color3.fromRGB(0, 0, 0)
-targetBox.TextSize = 12
+-- Target Selector Button
+local selectTargetBtn = Instance.new("TextButton")
+selectTargetBtn.Parent = MainFrame
+selectTargetBtn.Position = UDim2.new(0.1, 0, 0.10, 0)
+selectTargetBtn.Size = UDim2.new(0, 168, 0, 28)
+selectTargetBtn.Text = "Select Target: [ None ]"
+styleButton(selectTargetBtn)
 
-local boxCorner = Instance.new("UICorner")
-boxCorner.CornerRadius = UDim.new(0, 3)
-boxCorner.Parent = targetBox
+-- Player List Scroll Frame (Sharp style)
+local dropdownFrame = Instance.new("ScrollingFrame")
+dropdownFrame.Parent = MainFrame
+dropdownFrame.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+dropdownFrame.Position = UDim2.new(0.1, 0, 0.20, 0)
+dropdownFrame.Size = UDim2.new(0, 168, 0, 0)
+dropdownFrame.Visible = false
+dropdownFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+dropdownFrame.ScrollBarThickness = 4
 
-local boxStroke = Instance.new("UIStroke")
-boxStroke.Color = Color3.fromRGB(0, 255, 255)
-boxStroke.Thickness = 1
-boxStroke.Parent = targetBox
+local dropStroke = Instance.new("UIStroke")
+dropStroke.Color = Color3.fromRGB(0, 255, 255)
+dropStroke.Thickness = 1
+dropStroke.Parent = dropdownFrame
 
-targetBox.FocusLost:Connect(function(enterPressed)
-    if enterPressed then
-        targetName = targetBox.Text
-        selectedTarget = nil
-        for _, p in ipairs(Players:GetPlayers()) do
-            if p ~= LocalPlayer and (p.Name:lower():sub(1, #targetName) == targetName:lower() or p.DisplayName:lower():sub(1, #targetName) == targetName:lower()) then
-                selectedTarget = p
-                print("Target locked: " .. p.Name)
-                break
-            end
+local uiList = Instance.new("UIListLayout")
+uiList.Parent = dropdownFrame
+uiList.SortOrder = Enum.SortOrder.LayoutOrder
+uiList.Padding = UDim.new(0, 2)
+
+local function refreshPlayerList()
+    for _, child in ipairs(dropdownFrame:GetChildren()) do
+        if child:IsA("TextButton") then
+            child:Destroy()
         end
+    end
+    
+    local count = 0
+    for _, p in ipairs(Players:GetPlayers()) do
+        if p ~= LocalPlayer then
+            count = count + 1
+            local pBtn = Instance.new("TextButton")
+            pBtn.Parent = dropdownFrame
+            pBtn.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+            pBtn.Size = UDim2.new(1, 0, 0, 24)
+            pBtn.Font = Enum.Font.SourceSans
+            pBtn.Text = p.Name
+            pBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+            pBtn.TextSize = 12
+            
+            pBtn.MouseButton1Click:Connect(function()
+                selectedTarget = p
+                selectTargetBtn.Text = "Target: " .. p.Name
+                dropdownFrame.Visible = false
+                isDropdownOpen = false
+                dropdownFrame.Size = UDim2.new(0, 168, 0, 0)
+            end)
+        end
+    end
+    dropdownFrame.CanvasSize = UDim2.new(0, 0, 0, count * 26)
+end
+
+selectTargetBtn.MouseButton1Click:Connect(function()
+    isDropdownOpen = not isDropdownOpen
+    if isDropdownOpen then
+        refreshPlayerList()
+        dropdownFrame.Visible = true
+        dropdownFrame.Size = UDim2.new(0, 168, 0, 100)
+    else
+        dropdownFrame.Visible = false
+        dropdownFrame.Size = UDim2.new(0, 168, 0, 0)
     end
 end)
 
@@ -195,6 +222,7 @@ noclipButton.Size = UDim2.new(0, 168, 0, 28)
 noclipButton.Text = "Noclip (ทะลุกำแพง)"
 styleButton(noclipButton)
 
+noclipButton.MouseButton1Grid = nil -- placeholder
 noclipButton.MouseButton1Click:Connect(function()
     isNoclipActive = not isNoclipActive
     noclipButton.BackgroundColor3 = isNoclipActive and Color3.fromRGB(0, 180, 180) or Color3.fromRGB(15, 15, 15)
