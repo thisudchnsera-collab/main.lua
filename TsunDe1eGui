@@ -1,5 +1,5 @@
 -- TsunDe1e Gui (R6 Character Animations & Trolling Panel)
--- Theme: White Background, Thin Cyan Sharp Border, Black Buttons
+-- Theme: White Background, Thin Cyan Sharp Border, Black Buttons, Clean Thin Font
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -8,6 +8,7 @@ local LocalPlayer = Players.LocalPlayer
 local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
 local HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
 local Humanoid = Character:WaitForChild("Humanoid")
+local Camera = workspace.CurrentCamera
 
 -- Target System & State Variables
 local selectedTarget = nil
@@ -21,21 +22,20 @@ ScreenGui.Name = "TsunDe1eGui"
 ScreenGui.Parent = game:GetService("CoreGui")
 ScreenGui.ResetOnSpawn = false
 
--- Floating Toggle Icon (Hmph Style - Sharp Edges)
+-- Floating Toggle Icon (Hmph Style - Thin & Sharp)
 local ToggleButton = Instance.new("TextButton")
 ToggleButton.Name = "ToggleButton"
 ToggleButton.Parent = ScreenGui
 ToggleButton.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
 ToggleButton.Position = UDim2.new(0.05, 0, 0.1, 0)
 ToggleButton.Size = UDim2.new(0, 50, 0, 35)
-ToggleButton.Font = Enum.Font.SourceSans
+ToggleButton.FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal)
 ToggleButton.Text = "Hmph"
 ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 ToggleButton.TextSize = 14
 ToggleButton.Draggable = true
 ToggleButton.Active = true
 
--- เหลี่ยมคมกริบ ไร้ความโค้ง
 local toggleStroke = Instance.new("UIStroke")
 toggleStroke.Color = Color3.fromRGB(0, 255, 255) -- Cyan
 toggleStroke.Thickness = 1.5
@@ -52,10 +52,9 @@ MainFrame.Visible = false
 MainFrame.Draggable = true
 MainFrame.Active = true
 
--- เน้นเหลี่ยม 100% ไม่ใส่ UICorner ให้กรอบหลัก
 local mainStroke = Instance.new("UIStroke")
 mainStroke.Color = Color3.fromRGB(0, 255, 255) -- Cyan Border
-mainStroke.Thickness = 1.5 -- กรอบบางๆ
+mainStroke.Thickness = 1.5
 mainStroke.Parent = MainFrame
 
 -- Title
@@ -63,7 +62,7 @@ local TitleLabel = Instance.new("TextLabel")
 TitleLabel.Parent = MainFrame
 TitleLabel.BackgroundTransparency = 1
 TitleLabel.Size = UDim2.new(1, 0, 0, 28)
-TitleLabel.Font = Enum.Font.SourceSans
+TitleLabel.FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal)
 TitleLabel.Text = "TsunDe1e Gui"
 TitleLabel.TextColor3 = Color3.fromRGB(0, 180, 180)
 TitleLabel.TextSize = 16
@@ -73,13 +72,13 @@ ToggleButton.MouseButton1Click:Connect(function()
     MainFrame.Visible = not MainFrame.Visible
 end)
 
--- Helper function for styling buttons (Black buttons, sharp edges)
+-- Helper function for styling buttons (Black buttons, sharp edges, thin font)
 local function styleButton(btn)
     btn.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-    btn.Font = Enum.Font.SourceSans
+    btn.FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal)
     btn.TextColor3 = Color3.fromRGB(255, 255, 255)
     btn.TextSize = 13
-    -- ไร้ความโค้ง เน้นเหลี่ยม
+    
     local stroke = Instance.new("UIStroke")
     stroke.Color = Color3.fromRGB(0, 255, 255)
     stroke.Thickness = 1
@@ -95,7 +94,7 @@ selectTargetBtn.Size = UDim2.new(0, 168, 0, 28)
 selectTargetBtn.Text = "Select Target: [ None ]"
 styleButton(selectTargetBtn)
 
--- Player List Scroll Frame (Sharp style)
+-- Player List Scroll Frame
 local dropdownFrame = Instance.new("ScrollingFrame")
 dropdownFrame.Parent = MainFrame
 dropdownFrame.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
@@ -130,7 +129,7 @@ local function refreshPlayerList()
             pBtn.Parent = dropdownFrame
             pBtn.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
             pBtn.Size = UDim2.new(1, 0, 0, 24)
-            pBtn.Font = Enum.Font.SourceSans
+            pBtn.FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal)
             pBtn.Text = p.Name
             pBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
             pBtn.TextSize = 12
@@ -173,7 +172,7 @@ floorBangButton.MouseButton1Click:Connect(function()
     floorBangButton.BackgroundColor3 = isFloorBangActive and Color3.fromRGB(0, 180, 180) or Color3.fromRGB(15, 15, 15)
 end)
 
--- 2. Sit p/r (Head Ride - ขี่คอ)
+-- 2. Sit p/r (Head Ride)
 local isSitPRActive = false
 local sitPRButton = Instance.new("TextButton")
 sitPRButton.Parent = MainFrame
@@ -201,7 +200,7 @@ suckButton.MouseButton1Click:Connect(function()
     suckButton.BackgroundColor3 = isSuckActive and Color3.fromRGB(0, 180, 180) or Color3.fromRGB(15, 15, 15)
 end)
 
--- 4. ShiFt LOcK Button
+-- 4. ShiFt LOcK Button (Fixing shift lock mechanism)
 local shiftLockButton = Instance.new("TextButton")
 shiftLockButton.Parent = MainFrame
 shiftLockButton.Position = UDim2.new(0.1, 0, 0.58, 0)
@@ -214,7 +213,7 @@ shiftLockButton.MouseButton1Click:Connect(function()
     shiftLockButton.BackgroundColor3 = isShiftLockActive and Color3.fromRGB(0, 180, 180) or Color3.fromRGB(15, 15, 15)
 end)
 
--- 5. Noclip Button (ทะลุกำแพง)
+-- 5. Noclip Button
 local noclipButton = Instance.new("TextButton")
 noclipButton.Parent = MainFrame
 noclipButton.Position = UDim2.new(0.1, 0, 0.70, 0)
@@ -222,7 +221,6 @@ noclipButton.Size = UDim2.new(0, 168, 0, 28)
 noclipButton.Text = "Noclip (ทะลุกำแพง)"
 styleButton(noclipButton)
 
-noclipButton.MouseButton1Grid = nil -- placeholder
 noclipButton.MouseButton1Click:Connect(function()
     isNoclipActive = not isNoclipActive
     noclipButton.BackgroundColor3 = isNoclipActive and Color3.fromRGB(0, 180, 180) or Color3.fromRGB(15, 15, 15)
@@ -239,13 +237,14 @@ RunService.Stepped:Connect(function()
     end
 end)
 
--- Shift Lock Loop
+-- Fixed Shift Lock Loop (Smooth camera rotation lock)
 RunService.RenderStepped:Connect(function()
-    if Humanoid then
+    if Character and HumanoidRootPart and Humanoid then
         if isShiftLockActive then
             Humanoid.AutoRotate = false
-            local cameraCFrame = workspace.CurrentCamera.CFrame
-            HumanoidRootPart.CFrame = CFrame.new(HumanoidRootPart.Position, HumanoidRootPart.Position + Vector3.new(cameraCFrame.LookVector.X, 0, cameraCFrame.LookVector.Z))
+            local camCFrame = Camera.CFrame
+            local targetAngle = CFrame.new(HumanoidRootPart.Position, Vector3.new(camCFrame.LookVector.X * 9999, HumanoidRootPart.Position.Y, camCFrame.LookVector.Z * 9999))
+            HumanoidRootPart.CFrame = CFrame.new(HumanoidRootPart.Position) * CFrame.Angles(0, select(2, camCFrame:ToEulerAnglesYXZ()), 0)
         else
             Humanoid.AutoRotate = true
         end
@@ -258,10 +257,8 @@ RunService.Stepped:Connect(function()
         if selectedTarget and selectedTarget.Character and selectedTarget.Character:FindFirstChild("HumanoidRootPart") then
             local targetRoot = selectedTarget.Character.HumanoidRootPart
             if isSitPRActive then
-                -- ขี่คอบนหัวเป้าหมาย
                 HumanoidRootPart.CFrame = targetRoot.CFrame * CFrame.new(0, 3.5, 0)
             elseif isSuckActive then
-                -- ท่า Suck p/r
                 HumanoidRootPart.CFrame = targetRoot.CFrame * CFrame.new(0, 0, -2) * CFrame.Angles(math.rad(90), 0, 0)
             end
         end
