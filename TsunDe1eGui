@@ -1,5 +1,5 @@
 -- ==========================================
--- TsunDe1e Gui - Normal Font & Smooth Pose Edition
+-- TsunDe1e Gui - Perfect Quadruped Pose Edition
 -- ==========================================
 
 local Players = game:GetService("Players")
@@ -93,7 +93,7 @@ FrameStroke.Color = Color3.fromRGB(0, 255, 255)
 FrameStroke.Thickness = 2
 FrameStroke.Parent = MainFrame
 
--- ช่องชื่อ GUI ด้านบน (ใช้ฟอนต์ปกติ SourceSansBold)
+-- ช่องชื่อ GUI ด้านบน
 local TitleContainer = Instance.new("Frame")
 TitleContainer.Size = UDim2.new(1, 0, 0, 40)
 TitleContainer.BackgroundColor3 = Color3.fromRGB(0, 200, 200)
@@ -126,7 +126,7 @@ FunctionPanel.ScrollBarThickness = 4
 FunctionPanel.Parent = MainFrame
 
 -------------------------------------------------
--- 3. Functions & UI Elements inside Panel (Font Normal)
+-- 3. Functions & UI Elements inside Panel
 -------------------------------------------------
 local noclipEnabled = false
 local noclipConnection
@@ -334,8 +334,8 @@ RunService.Stepped:Connect(function()
     elseif sitBangMode and selectedTarget and selectedTarget.Character and selectedTarget.Character:FindFirstChild("HumanoidRootPart") then
         local targetRoot = selectedTarget.Character.HumanoidRootPart
         if humanoid then humanoid.Sit = true end
-        -- ท่าตามรูป: นั่งมือยันพื้น เท้ายันพื้น หันหน้าไปด้านหน้า (0 องศา) สะโพกชนเป้าหมาย ขยับเข้าออกนุ่มๆ ไม่สั่นรัว
-        myRoot.CFrame = targetRoot.CFrame * CFrame.new(0, -1, -1.1 + math.sin(tick() * (speed * 0.4)) * 0.3) * CFrame.Angles(0, 0, 0)
+        -- ท่าตามรูปสเก็ตช์: หันหน้าคว่ำลงพื้น (Pitch 90 องศา), นั่งสี่ขา (ขายันพื้น มือยันพื้น), สะโพกชนเป้าหมาย และขยับเข้าออกนุ่มๆ ไม่สั่นรัว
+        myRoot.CFrame = targetRoot.CFrame * CFrame.new(0, -0.8, -1.2 + math.sin(tick() * (speed * 0.4)) * 0.25) * CFrame.Angles(math.rad(90), 0, 0)
     elseif suckMode and selectedTarget and selectedTarget.Character and selectedTarget.Character:FindFirstChild("HumanoidRootPart") then
         local targetRoot = selectedTarget.Character.HumanoidRootPart
         if humanoid then humanoid.Sit = true end
