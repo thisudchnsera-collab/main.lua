@@ -1,266 +1,170 @@
--- TsunDe1e Gui (R6 Character Animations & Trolling Panel)
--- Theme: White Background, Thin Cyan Sharp Border, Black Buttons, Clean Thin Font
+-- โหลด Orion Library สำหรับสร้าง GUI สวยๆ
+local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
-local UserInputService = game:GetService("UserInputService")
-local LocalPlayer = Players.LocalPlayer
-local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-local HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
-local Humanoid = Character:WaitForChild("Humanoid")
-local Camera = workspace.CurrentCamera
+local localPlayer = Players.LocalPlayer
 
--- Target System & State Variables
 local selectedTarget = nil
-local isShiftLockActive = false
-local isNoclipActive = false
-local isDropdownOpen = false
+local activeConnection = nil
 
--- GUI Creation
-local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "TsunDe1eGui"
-ScreenGui.Parent = game:GetService("CoreGui")
-ScreenGui.ResetOnSpawn = false
+-- แก้ชื่อหัวข้อหน้าต่างเป็น Tsunde1e gui ให้ตรงเป๊ะ
+local Window = OrionLib:MakeWindow({
+    Name = "Tsunde1e gui",
+    HidePremium = false,
+    SaveConfig = true,
+    ConfigFolder = "Tsunde1eConfig"
+})
 
--- Floating Toggle Icon (Hmph Style - Thin & Sharp)
-local ToggleButton = Instance.new("TextButton")
-ToggleButton.Name = "ToggleButton"
-ToggleButton.Parent = ScreenGui
-ToggleButton.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-ToggleButton.Position = UDim2.new(0.05, 0, 0.1, 0)
-ToggleButton.Size = UDim2.new(0, 50, 0, 35)
-ToggleButton.FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal)
-ToggleButton.Text = "Hmph"
-ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-ToggleButton.TextSize = 14
-ToggleButton.Draggable = true
-ToggleButton.Active = true
+local MainTab = Window:MakeTab({
+    Name = "Main Control",
+    Icon = "rbxassetid://102233637902167",
+    PremiumOnly = false
+})
 
-local toggleStroke = Instance.new("UIStroke")
-toggleStroke.Color = Color3.fromRGB(0, 255, 255) -- Cyan
-toggleStroke.Thickness = 1.5
-toggleStroke.Parent = ToggleButton
-
--- Main Panel (White Background, Thin Cyan Border, Sharp Rectangular Style)
-local MainFrame = Instance.new("Frame")
-MainFrame.Name = "MainFrame"
-MainFrame.Parent = ScreenGui
-MainFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255) -- White Background
-MainFrame.Position = UDim2.new(0.15, 0, 0.1, 0)
-MainFrame.Size = UDim2.new(0, 210, 0, 360)
-MainFrame.Visible = false
-MainFrame.Draggable = true
-MainFrame.Active = true
-
-local mainStroke = Instance.new("UIStroke")
-mainStroke.Color = Color3.fromRGB(0, 255, 255) -- Cyan Border
-mainStroke.Thickness = 1.5
-mainStroke.Parent = MainFrame
-
--- Title
-local TitleLabel = Instance.new("TextLabel")
-TitleLabel.Parent = MainFrame
-TitleLabel.BackgroundTransparency = 1
-TitleLabel.Size = UDim2.new(1, 0, 0, 28)
-TitleLabel.FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal)
-TitleLabel.Text = "TsunDe1e Gui"
-TitleLabel.TextColor3 = Color3.fromRGB(0, 180, 180)
-TitleLabel.TextSize = 16
-
--- Toggle GUI Visibility
-ToggleButton.MouseButton1Click:Connect(function()
-    MainFrame.Visible = not MainFrame.Visible
-end)
-
--- Helper function for styling buttons (Black buttons, sharp edges, thin font)
-local function styleButton(btn)
-    btn.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-    btn.FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal)
-    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    btn.TextSize = 13
-    
-    local stroke = Instance.new("UIStroke")
-    stroke.Color = Color3.fromRGB(0, 255, 255)
-    stroke.Thickness = 1
-    stroke.Transparency = 0.5
-    stroke.Parent = btn
+local playerNames = {}
+for _, p in ipairs(Players:GetPlayers()) do
+    if p ~= localPlayer then
+        table.insert(playerNames, p.Name)
+    end
 end
 
--- Target Selector Button
-local selectTargetBtn = Instance.new("TextButton")
-selectTargetBtn.Parent = MainFrame
-selectTargetBtn.Position = UDim2.new(0.1, 0, 0.10, 0)
-selectTargetBtn.Size = UDim2.new(0, 168, 0, 28)
-selectTargetBtn.Text = "Select Target: [ None ]"
-styleButton(selectTargetBtn)
+local function stopAction()
+    if activeConnection then
+        activeConnection:Disconnect()
+        activeConnection = nil
+    end
+    local char = localPlayer.Character
+    if char and char:FindFirstChildOfClass("Humanoid") then
+        char.Humanoid.Sit = false
+    end
+end
 
--- Player List Scroll Frame
-local dropdownFrame = Instance.new("ScrollingFrame")
-dropdownFrame.Parent = MainFrame
-dropdownFrame.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
-dropdownFrame.Position = UDim2.new(0.1, 0, 0.20, 0)
-dropdownFrame.Size = UDim2.new(0, 168, 0, 0)
-dropdownFrame.Visible = false
-dropdownFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
-dropdownFrame.ScrollBarThickness = 4
+local PlayerDropdown = MainTab:AddDropdown({
+    Name = "List of people on the server",
+    Default = "",
+    Options = playerNames,
+    Callback = function(Value)
+        selectedTarget = Players:FindFirstChild(Value)
+    end
+})
 
-local dropStroke = Instance.new("UIStroke")
-dropStroke.Color = Color3.fromRGB(0, 255, 255)
-dropStroke.Thickness = 1
-dropStroke.Parent = dropdownFrame
+Players.PlayerAdded:Connect(function(p)
+    if p ~= localPlayer then
+        table.insert(playerNames, p.Name)
+        PlayerDropdown:Refresh(playerNames, true)
+    end
+end)
 
-local uiList = Instance.new("UIListLayout")
-uiList.Parent = dropdownFrame
-uiList.SortOrder = Enum.SortOrder.LayoutOrder
-uiList.Padding = UDim.new(0, 2)
-
-local function refreshPlayerList()
-    for _, child in ipairs(dropdownFrame:GetChildren()) do
-        if child:IsA("TextButton") then
-            child:Destroy()
+Players.PlayerRemoving:Connect(function(p)
+    for i, name in ipairs(playerNames) do
+        if name == p.Name then
+            table.remove(playerNames, i)
+            break
         end
     end
-    
-    local count = 0
-    for _, p in ipairs(Players:GetPlayers()) do
-        if p ~= LocalPlayer then
-            count = count + 1
-            local pBtn = Instance.new("TextButton")
-            pBtn.Parent = dropdownFrame
-            pBtn.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-            pBtn.Size = UDim2.new(1, 0, 0, 24)
-            pBtn.FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal)
-            pBtn.Text = p.Name
-            pBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-            pBtn.TextSize = 12
-            
-            pBtn.MouseButton1Click:Connect(function()
-                selectedTarget = p
-                selectTargetBtn.Text = "Target: " .. p.Name
-                dropdownFrame.Visible = false
-                isDropdownOpen = false
-                dropdownFrame.Size = UDim2.new(0, 168, 0, 0)
+    PlayerDropdown:Refresh(playerNames, true)
+    if selectedTarget == p then
+        selectedTarget = nil
+    end
+end)
+
+MainTab:AddButton({
+    Name = "suck dick p/r",
+    Callback = function()
+        if not selectedTarget or not selectedTarget.Character then return end
+        stopAction()
+        local char = localPlayer.Character
+        local targetChar = selectedTarget.Character
+        if char and char:FindFirstChild("HumanoidRootPart") and targetChar and targetChar:FindFirstChild("HumanoidRootPart") then
+            char.Humanoid.Sit = true
+            activeConnection = RunService.Stepped:Connect(function()
+                if selectedTarget.Character and selectedTarget.Character:FindFirstChild("HumanoidRootPart") then
+                    local targetHRP = targetChar.HumanoidRootPart
+                    char.HumanoidRootPart.CFrame = targetHRP.CFrame * CFrame.new(0, -1, -2) * CFrame.Angles(math.rad(90), 0, 0)
+                end
             end)
         end
     end
-    dropdownFrame.CanvasSize = UDim2.new(0, 0, 0, count * 26)
-end
+})
 
-selectTargetBtn.MouseButton1Click:Connect(function()
-    isDropdownOpen = not isDropdownOpen
-    if isDropdownOpen then
-        refreshPlayerList()
-        dropdownFrame.Visible = true
-        dropdownFrame.Size = UDim2.new(0, 168, 0, 100)
-    else
-        dropdownFrame.Visible = false
-        dropdownFrame.Size = UDim2.new(0, 168, 0, 0)
-    end
-end)
-
--- 1. Sit/Floor Bang (Prone pose)
-local isFloorBangActive = false
-local floorBangButton = Instance.new("TextButton")
-floorBangButton.Parent = MainFrame
-floorBangButton.Position = UDim2.new(0.1, 0, 0.22, 0)
-floorBangButton.Size = UDim2.new(0, 168, 0, 28)
-floorBangButton.Text = "Sit/Floor Bang (Prone)"
-styleButton(floorBangButton)
-
-floorBangButton.MouseButton1Click:Connect(function()
-    isFloorBangActive = not isFloorBangActive
-    floorBangButton.BackgroundColor3 = isFloorBangActive and Color3.fromRGB(0, 180, 180) or Color3.fromRGB(15, 15, 15)
-end)
-
--- 2. Sit p/r (Head Ride)
-local isSitPRActive = false
-local sitPRButton = Instance.new("TextButton")
-sitPRButton.Parent = MainFrame
-sitPRButton.Position = UDim2.new(0.1, 0, 0.34, 0)
-sitPRButton.Size = UDim2.new(0, 168, 0, 28)
-sitPRButton.Text = "Sit p/r (Head Ride)"
-styleButton(sitPRButton)
-
-sitPRButton.MouseButton1Click:Connect(function()
-    isSitPRActive = not isSitPRActive
-    sitPRButton.BackgroundColor3 = isSitPRActive and Color3.fromRGB(0, 180, 180) or Color3.fromRGB(15, 15, 15)
-end)
-
--- 3. Suck dick p/r
-local isSuckActive = false
-local suckButton = Instance.new("TextButton")
-suckButton.Parent = MainFrame
-suckButton.Position = UDim2.new(0.1, 0, 0.46, 0)
-suckButton.Size = UDim2.new(0, 168, 0, 28)
-suckButton.Text = "Suck dick p/r"
-styleButton(suckButton)
-
-suckButton.MouseButton1Click:Connect(function()
-    isSuckActive = not isSuckActive
-    suckButton.BackgroundColor3 = isSuckActive and Color3.fromRGB(0, 180, 180) or Color3.fromRGB(15, 15, 15)
-end)
-
--- 4. ShiFt LOcK Button (Fixing shift lock mechanism)
-local shiftLockButton = Instance.new("TextButton")
-shiftLockButton.Parent = MainFrame
-shiftLockButton.Position = UDim2.new(0.1, 0, 0.58, 0)
-shiftLockButton.Size = UDim2.new(0, 168, 0, 28)
-shiftLockButton.Text = "ShiFt LOcK"
-styleButton(shiftLockButton)
-
-shiftLockButton.MouseButton1Click:Connect(function()
-    isShiftLockActive = not isShiftLockActive
-    shiftLockButton.BackgroundColor3 = isShiftLockActive and Color3.fromRGB(0, 180, 180) or Color3.fromRGB(15, 15, 15)
-end)
-
--- 5. Noclip Button
-local noclipButton = Instance.new("TextButton")
-noclipButton.Parent = MainFrame
-noclipButton.Position = UDim2.new(0.1, 0, 0.70, 0)
-noclipButton.Size = UDim2.new(0, 168, 0, 28)
-noclipButton.Text = "Noclip (ทะลุกำแพง)"
-styleButton(noclipButton)
-
-noclipButton.MouseButton1Click:Connect(function()
-    isNoclipActive = not isNoclipActive
-    noclipButton.BackgroundColor3 = isNoclipActive and Color3.fromRGB(0, 180, 180) or Color3.fromRGB(15, 15, 15)
-end)
-
--- Noclip Loop
-RunService.Stepped:Connect(function()
-    if isNoclipActive and Character then
-        for _, part in ipairs(Character:GetDescendants()) do
-            if part:IsA("BasePart") then
-                part.CanCollide = false
-            end
+MainTab:AddButton({
+    Name = "bang p/r",
+    Callback = function()
+        if not selectedTarget or not selectedTarget.Character then return end
+        stopAction()
+        local char = localPlayer.Character
+        local targetChar = selectedTarget.Character
+        if char and char:FindFirstChild("HumanoidRootPart") and targetChar and targetChar:FindFirstChild("HumanoidRootPart") then
+            char.Humanoid.Sit = true
+            local tickTime = 0
+            activeConnection = RunService.Stepped:Connect(function()
+                if selectedTarget.Character and selectedTarget.Character:FindFirstChild("HumanoidRootPart") then
+                    tickTime = tickTime + 15
+                    local offsetZ = 1.5 + math.sin(tickTime) * 0.3
+                    local targetHRP = targetChar.HumanoidRootPart
+                    char.HumanoidRootPart.CFrame = targetHRP.CFrame * CFrame.new(0, 0, offsetZ)
+                end
+            end)
         end
     end
-end)
+})
 
--- Fixed Shift Lock Loop (Smooth camera rotation lock)
-RunService.RenderStepped:Connect(function()
-    if Character and HumanoidRootPart and Humanoid then
-        if isShiftLockActive then
-            Humanoid.AutoRotate = false
-            local camCFrame = Camera.CFrame
-            local targetAngle = CFrame.new(HumanoidRootPart.Position, Vector3.new(camCFrame.LookVector.X * 9999, HumanoidRootPart.Position.Y, camCFrame.LookVector.Z * 9999))
-            HumanoidRootPart.CFrame = CFrame.new(HumanoidRootPart.Position) * CFrame.Angles(0, select(2, camCFrame:ToEulerAnglesYXZ()), 0)
-        else
-            Humanoid.AutoRotate = true
+MainTab:AddButton({
+    Name = "Shake the dick p/r",
+    Callback = function()
+        if not selectedTarget or not selectedTarget.Character then return end
+        stopAction()
+        local char = localPlayer.Character
+        local targetChar = selectedTarget.Character
+        if char and char:FindFirstChild("HumanoidRootPart") and targetChar and targetChar:FindFirstChild("HumanoidRootPart") then
+            char.Humanoid.Sit = true
+            local tickTime = 0
+            activeConnection = RunService.Stepped:Connect(function()
+                if selectedTarget.Character and selectedTarget.Character:FindFirstChild("HumanoidRootPart") then
+                    tickTime = tickTime + 20
+                    local offsetZ = 1.2 + math.cos(tickTime) * 0.4
+                    local targetHRP = targetChar.HumanoidRootPart
+                    char.HumanoidRootPart.CFrame = targetHRP.CFrame * CFrame.new(0, 0, offsetZ) * CFrame.Angles(0, math.rad(180), 0)
+                end
+            end)
         end
     end
-end)
+})
 
--- Target Handling Loop
-RunService.Stepped:Connect(function()
-    if Character and HumanoidRootPart then
-        if selectedTarget and selectedTarget.Character and selectedTarget.Character:FindFirstChild("HumanoidRootPart") then
-            local targetRoot = selectedTarget.Character.HumanoidRootPart
-            if isSitPRActive then
-                HumanoidRootPart.CFrame = targetRoot.CFrame * CFrame.new(0, 3.5, 0)
-            elseif isSuckActive then
-                HumanoidRootPart.CFrame = targetRoot.CFrame * CFrame.new(0, 0, -2) * CFrame.Angles(math.rad(90), 0, 0)
-            end
-        end
+MainTab:AddButton({
+    Name = "Sit p/r",
+    Callback = function()
+        stopAction()
+        local humanoid = localPlayer.Character:FindFirstChildOfClass("Humanoid")
+        if humanoid then humanoid.Sit = true end
     end
-end)
+})
+
+MainTab:AddButton({
+    Name = "X (Close GUI)",
+    Callback = function()
+        stopAction()
+        OrionLib:Destroy()
+        
+        local ScreenGui = Instance.new("ScreenGui")
+        ScreenGui.Parent = game.CoreGui
+        
+        local ImageButton = Instance.new("ImageButton")
+        ImageButton.Parent = ScreenGui
+        ImageButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+        ImageButton.BorderSizePixel = 2
+        ImageButton.BorderColor3 = Color3.fromRGB(0, 255, 255)
+        ImageButton.Position = UDim2.new(0, 50, 0, 50)
+        ImageButton.Size = UDim2.new(0, 50, 0, 50)
+        ImageButton.Image = "https://create.roblox.com/store/asset/102233637902167/Meow"
+        ImageButton.Draggable = true
+        
+        ImageButton.MouseButton1Click:Connect(function()
+            ScreenGui:Destroy()
+            loadstring(game:HttpGet("ลิงก์_RAW_ไฟล์โค้ดนี้บนGitHub_ของนาย"))() 
+        end)
+    end
+})
+
+OrionLib:Init()
